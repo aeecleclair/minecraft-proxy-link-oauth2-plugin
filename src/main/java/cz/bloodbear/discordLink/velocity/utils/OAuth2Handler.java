@@ -1,6 +1,5 @@
 package cz.bloodbear.discordLink.velocity.utils;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import cz.bloodbear.discordLink.core.utils.AuthHandler;
@@ -35,7 +34,7 @@ public class OAuth2Handler implements AuthHandler {
                 .add("code", code)
                 .add("redirect_uri", REDIRECT_URI)
                 .build();
-        Request request = (new Request.Builder()).url(AUTH_URL+"/oauth2/token").post(formBody).build();
+        Request request = (new Request.Builder()).url(AUTH_URL+"/auth/token").post(formBody).build();
 
         try (Response response = this.httpClient.newCall(request).execute()) {
             if (response.isSuccessful()) {
@@ -53,28 +52,11 @@ public class OAuth2Handler implements AuthHandler {
             String accessToken = getAccessToken(code);
 
             DiscordAccount accountDetails = getAccountDetails(accessToken);
-            addUserToGuild(accessToken, accountDetails);
             return new DiscordAccount(accountDetails.id(), accountDetails.username());
         } catch (IOException e) {
             DiscordLink.getInstance().getLogger().error(e.getMessage());
         }
         return null;
-    }
-
-
-    public void addUserToGuild(String accessToken, DiscordAccount discordAccount) {
-        JsonObject bodyJson = new JsonObject();
-        bodyJson.addProperty("access_token", accessToken);
-
-        RequestBody body = RequestBody.create(
-                new Gson().toJson(bodyJson),
-                MediaType.parse("application/json")
-        );
-    }
-
-    private String extractValue(String json, String key) {
-        JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
-        return jsonObject.has(key) ? jsonObject.get(key).getAsString() : null;
     }
 
     private DiscordAccount getAccountDetails(String accessToken) {
