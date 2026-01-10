@@ -17,6 +17,7 @@
     }
   },
   "discord": {
+    "url": "https://discord.com/api",
     "guildId": "",
     "client": {
       "id": "",

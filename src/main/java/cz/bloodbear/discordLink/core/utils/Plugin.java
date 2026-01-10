@@ -17,8 +17,6 @@ public interface Plugin {
 
     AuthHandler getOAuth2Handler();
 
-    Bot getDiscordBot();
-
     Component formatMessage(String input);
 
     String getClientId();

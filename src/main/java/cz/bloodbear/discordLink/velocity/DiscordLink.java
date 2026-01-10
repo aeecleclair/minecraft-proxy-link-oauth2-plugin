@@ -12,12 +12,9 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import cz.bloodbear.discordLink.core.event.PlayerSync;
 import cz.bloodbear.discordLink.core.utils.UpdateChecker;
 import cz.bloodbear.discordLink.core.utils.event.EventBus;
-import cz.bloodbear.discordLink.velocity.commands.DiscordAdminCommand;
 import cz.bloodbear.discordLink.velocity.commands.DiscordCommand;
-import cz.bloodbear.discordLink.velocity.discord.DiscordBot;
 import cz.bloodbear.discordLink.velocity.events.PlayerConnection;
 import cz.bloodbear.discordLink.velocity.placeholders.DiscordIdPlaceholder;
 import cz.bloodbear.discordLink.velocity.placeholders.DiscordUsernamePlaceholder;
@@ -26,8 +23,6 @@ import cz.bloodbear.discordLink.core.records.RoleEntry;
 import cz.bloodbear.discordLink.velocity.utils.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -40,7 +35,6 @@ import java.util.List;
         authors = {"Mtn16"}, url = "https://github.com/Mtn16/DiscordLink",
         description = "A Velocity plugin for Discord integration.",
         dependencies = {
-            @Dependency(id = "luckperms", optional = false),
             @Dependency(id = "plan", optional = true)
         })
 public class DiscordLink implements cz.bloodbear.discordLink.core.utils.Plugin {
@@ -71,9 +65,6 @@ public class DiscordLink implements cz.bloodbear.discordLink.core.utils.Plugin {
     private final WebServer webServer;
     private final OAuth2Handler oAuth2Handler;
 
-    private DiscordBot discordBot;
-    private LuckPerms luckPerms;
-
     private EventBus eventBus;
 
     private long startTime;
@@ -98,7 +89,6 @@ public class DiscordLink implements cz.bloodbear.discordLink.core.utils.Plugin {
 
         startTime = System.currentTimeMillis();
 
-        loadListeners();
         loadHTML();
 
         this.databaseManager = new DatabaseManager(
@@ -126,17 +116,13 @@ public class DiscordLink implements cz.bloodbear.discordLink.core.utils.Plugin {
             redirect = "http://" + config.getString("webserver.ip", "") + ":" + config.getString("webserver.port", "")  + "/callback";
         }
         this.oAuth2Handler = new OAuth2Handler(
+                config.getString("discord.url", "https://discord.com/api"),
                 config.getString("discord.client.id", ""),
                 config.getString("discord.client.secret", ""),
-                redirect,
-                config.getString("discord.bot.token", "")
+                redirect
         );
 
         loadPlaceholders();
-    }
-
-    private void loadListeners() {
-        new PlayerSync(eventBus, databaseManager, discordBot.getJdaInstance(), getGuildId());
     }
 
     private void checkVersion() {
@@ -182,20 +168,8 @@ public class DiscordLink implements cz.bloodbear.discordLink.core.utils.Plugin {
                 .build();
 
         commandManager.register(discordCommandMeta, new DiscordCommand());
-        commandManager.register(adminCommandMeta, new DiscordAdminCommand());
-
-        this.discordBot = new DiscordBot(
-                config.getString("discord.bot.token", ""),
-                config.getString("discord.guildId", ""),
-                config.getString("discord.bot.presence", "MC Sync")
-        );
-        this.luckPerms = LuckPermsProvider.get();
 
         databaseManager.deleteLinkCodes();
-
-        if(config.getBoolean("plugin.updater.enabled", true)) {
-            checkVersion();
-        }
     }
 
     @Subscribe
@@ -237,8 +211,6 @@ public class DiscordLink implements cz.bloodbear.discordLink.core.utils.Plugin {
 
     public Logger getLogger() { return logger; }
     public ProxyServer getServer() { return server; }
-    public LuckPerms getLuckPerms() { return luckPerms; }
-    public DiscordBot getDiscordBot() { return discordBot; }
 
     public Component formatMessage(String input) {
         return miniMessage.deserialize(input);
@@ -246,6 +218,7 @@ public class DiscordLink implements cz.bloodbear.discordLink.core.utils.Plugin {
 
     public String getClientId() { return config.getString("discord.client.id", ""); }
     public String getRedirectUri() { return redirect; }
+    public String getAuthUrl() { return config.getString("discord.url", "https://discord.com/api"); }
 
     public List<RoleEntry> getRoles() { return sync.getRoles("roles"); }
 

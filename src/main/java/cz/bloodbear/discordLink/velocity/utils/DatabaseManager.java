@@ -78,7 +78,6 @@ public class DatabaseManager implements DB {
         Optional<Player> player = DiscordLink.getInstance().getServer().getPlayer(UUID.fromString(uuid));
         player.ifPresent(value -> value.sendMessage(MiniMessage.miniMessage().deserialize(DiscordLink.getInstance().getMessage("command.discord.linked", value))));
         CustomCommandManager.InvokeLinkedCommands(uuid);
-        DiscordLink.getInstance().getDiscordBot().syncRoles(uuid);
     }
 
     public DiscordAccount getDiscordAccount(String uuid) {
@@ -108,7 +107,6 @@ public class DatabaseManager implements DB {
 
     public void unlinkAccount(String uuid) {
         CustomCommandManager.InvokeUnlinkedCommands(uuid);
-        DiscordLink.getInstance().getDiscordBot().removeSyncRoles(getDiscordAccount(uuid).id());
 
         String sql = "DELETE FROM linked_accounts WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {

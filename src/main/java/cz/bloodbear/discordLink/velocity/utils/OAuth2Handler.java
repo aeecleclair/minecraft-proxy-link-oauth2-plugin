@@ -11,18 +11,18 @@ import okhttp3.*;
 import java.io.IOException;
 
 public class OAuth2Handler implements AuthHandler {
+    private final String AUTH_URL;
     private final String CLIENT_ID;
     private final String CLIENT_SECRET;
     private final String REDIRECT_URI;
-    private final String TOKEN;
 
     private final OkHttpClient httpClient;
 
-    public OAuth2Handler(String CLIENT_ID, String CLIENT_SECRET, String REDIRECT_URI, String TOKEN) {
+    public OAuth2Handler(String AUTH_URL, String CLIENT_ID, String CLIENT_SECRET, String REDIRECT_URI) {
+        this.AUTH_URL = AUTH_URL;
         this.CLIENT_ID = CLIENT_ID;
         this.CLIENT_SECRET = CLIENT_SECRET;
         this.REDIRECT_URI = REDIRECT_URI;
-        this.TOKEN = TOKEN;
 
         this.httpClient = new OkHttpClient();
     }
@@ -35,7 +35,7 @@ public class OAuth2Handler implements AuthHandler {
                 .add("code", code)
                 .add("redirect_uri", REDIRECT_URI)
                 .build();
-        Request request = (new Request.Builder()).url("https://discord.com/api/oauth2/token").post(formBody).build();
+        Request request = (new Request.Builder()).url(AUTH_URL+"/oauth2/token").post(formBody).build();
 
         try (Response response = this.httpClient.newCall(request).execute()) {
             if (response.isSuccessful()) {
@@ -70,23 +70,6 @@ public class OAuth2Handler implements AuthHandler {
                 new Gson().toJson(bodyJson),
                 MediaType.parse("application/json")
         );
-
-        Request request = new Request.Builder()
-                .url("https://discord.com/api/guilds/" + cz.bloodbear.discordLink.paper.DiscordLink.getInstance().getGuildId() + "/members/" + discordAccount.id())
-                .put(body)
-                .header("Authorization", "Bot " + TOKEN)
-                .header("Content-Type", "application/json")
-                .build();
-
-        try (Response response = httpClient.newCall(request).execute()) {
-            if (response.code() == 201 || response.code() == 204) {
-                cz.bloodbear.discordLink.paper.DiscordLink.getInstance().getLogger().info("✅ Discord user " + discordAccount.username() + " has been added to Discord server.");
-            } else {
-                cz.bloodbear.discordLink.paper.DiscordLink.getInstance().getLogger().severe("❌ Failed to add Discord user to server: " + response.code() + " - " + response.body().string());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private String extractValue(String json, String key) {
@@ -97,7 +80,7 @@ public class OAuth2Handler implements AuthHandler {
     private DiscordAccount getAccountDetails(String accessToken) {
         try {
             Request request = (new Request.Builder())
-                    .url("https://discord.com/api/users/@me")
+                    .url(AUTH_URL+"/users/me")
                     .header("Authorization", "Bearer " + accessToken)
                     .build();
 
