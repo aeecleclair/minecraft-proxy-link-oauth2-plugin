@@ -3,14 +3,18 @@ package cz.bloodbear.discordLink.velocity.utils;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import com.velocitypowered.api.proxy.Player;
 import cz.bloodbear.discordLink.core.utils.ConsoleColor;
 import cz.bloodbear.discordLink.velocity.DiscordLink;
 import cz.bloodbear.discordLink.core.records.DiscordAccount;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -99,18 +103,43 @@ public class WebServer {
                     return;
                 }
 
-                if(DiscordLink.getInstance().getDatabaseManager().isDiscordAccountLinked(discordAccount.id())) {
+                // From this point, we have a valid UUID and Discord account
+
+                // We would like to check if the Discord account is already linked
+                // And if the current Minecraft UUID corresponds to this account
+                /*if(DiscordLink.getInstance().getDatabaseManager().isDiscordAccountLinked(discordAccount.id()) &&
+                !DiscordLink.getInstance().getDatabaseManager().getDiscordAccount(uuid).id().equals(discordAccount.id())) {
                     sendHtmlResponse(exchange, 400, DiscordLink.getInstance().getHtmlPage("alreadylinked").getContent());
                     return;
-                }
+                }*/
+
 
                 if(DiscordLink.getInstance().getDatabaseManager().isLinked(uuid)) {
-                    sendHtmlResponse(exchange, 400, cz.bloodbear.discordLink.velocity.DiscordLink.getInstance().getHtmlPage("alreadylinked").getContent());
-                    return;
+
+                    // If the UUID is already linked, we need to check if it's linked to the same Discord account
+                    DiscordAccount existingAccount = DiscordLink.getInstance().getDatabaseManager().getDiscordAccount(uuid);
+                    if(!existingAccount.id().equals(discordAccount.id())) {
+                        sendHtmlResponse(exchange, 400, cz.bloodbear.discordLink.velocity.DiscordLink.getInstance().getHtmlPage("alreadylinked").getContent());
+                        return;
+                    }
+                } else {
+                    // If the UUID is not linked, we need to check if the Discord account is already linked to another UUID
+                    if(DiscordLink.getInstance().getDatabaseManager().isDiscordAccountLinked(discordAccount.id())) {
+                        sendHtmlResponse(exchange, 400, cz.bloodbear.discordLink.velocity.DiscordLink.getInstance().getHtmlPage("alreadylinked").getContent());
+                        return;
+                    }
+                    // Then we can proceed to link the account
+                    DiscordLink.getInstance().getDatabaseManager().linkAccount(uuid, discordAccount.id(), discordAccount.username());
                 }
 
-                DiscordLink.getInstance().getDatabaseManager().linkAccount(uuid, discordAccount.id(), discordAccount.username());
+                DiscordLink.getInstance().getAuthManager().authenticate(UUID.fromString(uuid));
                 sendHtmlResponse(exchange, 200, DiscordLink.getInstance().getHtmlPage("linked").getContent());
+
+                Optional<Player> player = DiscordLink.getInstance().getServer().getPlayer(UUID.fromString(uuid));
+                // Move the player to the lobby/host server after linking
+                player.ifPresent(p -> p.createConnectionRequest(DiscordLink.getInstance().getServer().getServer("lobby").orElse(null)).fireAndForget());
+
+
             } catch (Exception e) {
                 DiscordLink.getInstance().getLogger().error(e.getMessage());
             }

@@ -1,6 +1,7 @@
 package cz.bloodbear.discordLink.velocity.events;
 
 import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import cz.bloodbear.discordLink.velocity.DiscordLink;
 
@@ -14,8 +15,8 @@ public class PlayerConnection {
     }
 
     @Subscribe
-    public void onDisconnect() {
-
+    public void onDisconnect(DisconnectEvent event) {
+        DiscordLink.getInstance().getAuthManager().revoke(event.getPlayer().getUniqueId());
     }
 
 }

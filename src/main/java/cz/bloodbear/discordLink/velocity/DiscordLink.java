@@ -65,13 +65,14 @@ public class DiscordLink implements cz.bloodbear.discordLink.core.utils.Plugin {
     private final DatabaseManager databaseManager;
     private final WebServer webServer;
     private final OAuth2Handler oAuth2Handler;
+    private final AuthManager authManager;
 
     private EventBus eventBus;
 
     private long startTime;
 
     @Inject
-    public DiscordLink(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory, PluginContainer container) {
+    public DiscordLink(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory, PluginContainer container, AuthManager authManager) {
         instance = this;
 
         this.server = server;
@@ -122,6 +123,7 @@ public class DiscordLink implements cz.bloodbear.discordLink.core.utils.Plugin {
                 config.getString("discord.client.secret", ""),
                 redirect
         );
+        this.authManager = authManager;
 
         loadPlaceholders();
     }
@@ -210,6 +212,8 @@ public class DiscordLink implements cz.bloodbear.discordLink.core.utils.Plugin {
     public DatabaseManager getDatabaseManager() { return databaseManager; }
 
     public OAuth2Handler getOAuth2Handler() { return oAuth2Handler; }
+
+    public AuthManager getAuthManager() { return authManager; }
 
     public Logger getLogger() { return logger; }
     public ProxyServer getServer() { return server; }

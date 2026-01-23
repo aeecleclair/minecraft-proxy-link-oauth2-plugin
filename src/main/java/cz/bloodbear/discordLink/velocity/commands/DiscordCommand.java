@@ -48,10 +48,14 @@ public class DiscordCommand implements SimpleCommand {
         Player player = (Player)invocation.source();
 
         if (args[0].equalsIgnoreCase("link")) {
-            if (databaseManager.isLinked(player.getUniqueId().toString())) {
-                source.sendMessage(DiscordLink.getInstance().formatMessage(DiscordLink.getInstance().getMessage("command.discord.alreadylinked", player)));
+            if (DiscordLink.getInstance().getAuthManager().isAuthenticated(player.getUniqueId())) {
+                source.sendMessage(DiscordLink.getInstance().formatMessage(DiscordLink.getInstance().getMessage("command.discord.alreadyauthenticated", player)));
                 return;
             }
+            /*if (databaseManager.isLinked(player.getUniqueId().toString())) {
+                source.sendMessage(DiscordLink.getInstance().formatMessage(DiscordLink.getInstance().getMessage("command.discord.alreadylinked", player)));
+                return;
+            }*/
 
 
             databaseManager.deleteLinkCodes(player.getUniqueId().toString());
