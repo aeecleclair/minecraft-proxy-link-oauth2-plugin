@@ -12,4 +12,10 @@ public class PlayerConnection {
 
         }
     }
+
+    @Subscribe
+    public void onDisconnect() {
+
+    }
+
 }

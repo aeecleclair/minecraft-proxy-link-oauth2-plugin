@@ -33,7 +33,7 @@ public class DatabaseManager implements DB {
     private void createTable() {
         String sql = "CREATE TABLE IF NOT EXISTS linked_accounts (" +
                 "uuid VARCHAR(36) PRIMARY KEY, " +
-                "discord_id VARCHAR(25) NOT NULL, " +
+                "discord_id VARCHAR(36) NOT NULL, " +
                 "discord_username VARCHAR(255) NOT NULL" +
                 ")";
         try (Statement stmt = connection.createStatement()) {

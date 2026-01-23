@@ -15,6 +15,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import cz.bloodbear.discordLink.core.utils.UpdateChecker;
 import cz.bloodbear.discordLink.core.utils.event.EventBus;
 import cz.bloodbear.discordLink.velocity.commands.DiscordCommand;
+import cz.bloodbear.discordLink.velocity.events.Blockers;
 import cz.bloodbear.discordLink.velocity.events.PlayerConnection;
 import cz.bloodbear.discordLink.velocity.placeholders.DiscordIdPlaceholder;
 import cz.bloodbear.discordLink.velocity.placeholders.DiscordUsernamePlaceholder;
@@ -158,6 +159,7 @@ public class DiscordLink implements cz.bloodbear.discordLink.core.utils.Plugin {
         }
 
         server.getEventManager().register(this, new PlayerConnection());
+        server.getEventManager().register(this, new Blockers());
         CommandManager commandManager = server.getCommandManager();
         CommandMeta discordCommandMeta = commandManager.metaBuilder("discord")
                 .plugin(container)

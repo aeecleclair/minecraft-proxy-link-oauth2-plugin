@@ -71,9 +71,9 @@ public class OAuth2Handler implements AuthHandler {
                     String responseBody = response.body().string();
                     String userId = responseBody.substring(responseBody.indexOf("\"id\":\"") + 6);
                     userId = userId.substring(0, userId.indexOf("\""));
-                    String username = responseBody.substring(responseBody.indexOf("\"username\":\"") + 12);
-                    username = username.substring(0, username.indexOf("\""));
-                    return new DiscordAccount(userId, username);
+                    String nickname = responseBody.substring(responseBody.indexOf("\"nickname\":\"") + 12);
+                    nickname = nickname.substring(0, nickname.indexOf("\""));
+                    return new DiscordAccount(userId, nickname);
                 }
             }
         } catch (IOException e) {
