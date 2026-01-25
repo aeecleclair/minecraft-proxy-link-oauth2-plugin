@@ -8,7 +8,7 @@ import cz.bloodbear.OAuth2Client.core.records.OAuth2Account;
 public class OAuth2IdPlaceholder implements Placeholder {
     @Override
     public String getIdentifier() {
-        return "[discordId]";
+        return "[OAuth2Id]";
     }
 
     @Override

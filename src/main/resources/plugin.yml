@@ -10,16 +10,16 @@ depend: [LuckPerms]
 softdepend: [PlaceholderAPI, Plan]
 
 permissions:
-  discordlink.player:
+  oauth2client.player:
     default: notop
     children:
-      discordlink.player.link: true
-      discordlink.player.unlink: true
-      discordlink.player.info: true
+      oauth2client.player.link: true
+      oauth2client.player.unlink: true
+      oauth2client.player.info: true
 
-  discordlink.admin:
+  oauth2client.admin:
     default: op
     children:
-      discordlink.admin.reload: true
-      discordlink.admin.resync: true
-      discordlink.admin.resyncall: true
+      oauth2client.admin.reload: true
+      oauth2client.admin.resync: true
+      oauth2client.admin.resyncall: true

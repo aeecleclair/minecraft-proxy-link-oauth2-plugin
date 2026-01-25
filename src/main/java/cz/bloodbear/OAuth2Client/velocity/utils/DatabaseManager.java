@@ -76,7 +76,6 @@ public class DatabaseManager implements DB {
         }
 
         Optional<Player> player = OAuth2Client.getInstance().getServer().getPlayer(UUID.fromString(minecraftUUID));
-        player.ifPresent(value -> value.sendMessage(MiniMessage.miniMessage().deserialize(OAuth2Client.getInstance().getMessage("command.discord.linked", value))));
     }
 
     public OAuth2Account getOAuth2Account(String uuid) {

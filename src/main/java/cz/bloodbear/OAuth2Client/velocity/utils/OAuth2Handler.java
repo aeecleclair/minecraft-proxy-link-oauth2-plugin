@@ -47,7 +47,7 @@ public class OAuth2Handler implements AuthHandler {
         return null;
     }
 
-    public OAuth2Account getDiscordAccount(String code) {
+    public OAuth2Account getOAuth2Account(String code) {
         try {
             String accessToken = getAccessToken(code);
 

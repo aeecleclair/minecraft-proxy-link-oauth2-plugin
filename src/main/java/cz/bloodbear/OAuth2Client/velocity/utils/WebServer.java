@@ -95,19 +95,19 @@ public class WebServer {
                     return;
                 }
 
-                OAuth2Account OAuth2Account = OAuth2Client.getInstance().getOAuth2Handler().getDiscordAccount(code);
+                OAuth2Account OAuth2Account = OAuth2Client.getInstance().getOAuth2Handler().getOAuth2Account(code);
                 if(OAuth2Account == null) {
                     //sendResponse(exchange, 400, "Failed to verify account.");
                     sendHtmlResponse(exchange, 400, OAuth2Client.getInstance().getHtmlPage("failed").getContent());
                     return;
                 }
 
-                // From this point, we have a valid UUID and Discord account
+                // From this point, we have a valid UUID and an account from the OAuth2 provider
 
-                // We would like to check if the Discord account is already linked
+                // We would like to check if the OAuth2 provider account is already linked
                 // And if the current Minecraft UUID corresponds to this account
-                /*if(OAuth2Client.getInstance().getDatabaseManager().isDiscordAccountLinked(OAuth2Account.id()) &&
-                !OAuth2Client.getInstance().getDatabaseManager().getDiscordAccount(uuid).id().equals(OAuth2Account.id())) {
+                /*if(OAuth2Client.getInstance().getDatabaseManager().isOAuth2AccountLinked(OAuth2Account.id()) &&
+                !OAuth2Client.getInstance().getDatabaseManager().getOAuth2Account(uuid).id().equals(OAuth2Account.id())) {
                     sendHtmlResponse(exchange, 400, OAuth2Client.getInstance().getHtmlPage("alreadylinked").getContent());
                     return;
                 }*/
@@ -115,14 +115,14 @@ public class WebServer {
 
                 if(OAuth2Client.getInstance().getDatabaseManager().isLinked(uuid)) {
 
-                    // If the UUID is already linked, we need to check if it's linked to the same Discord account
+                    // If the UUID is already linked, we need to check if it's linked to the same account on the OAuth2 provider
                     OAuth2Account existingAccount = OAuth2Client.getInstance().getDatabaseManager().getOAuth2Account(uuid);
                     if(!existingAccount.id().equals(OAuth2Account.id())) {
                         sendHtmlResponse(exchange, 400, OAuth2Client.getInstance().getHtmlPage("alreadylinked").getContent());
                         return;
                     }
                 } else {
-                    // If the UUID is not linked, we need to check if the Discord account is already linked to another UUID
+                    // If the UUID is not linked, we need to check if the OAuth2 provider account is already linked to another UUID
                     if(OAuth2Client.getInstance().getDatabaseManager().isOAuth2AccountLinked(OAuth2Account.id())) {
                         sendHtmlResponse(exchange, 400, OAuth2Client.getInstance().getHtmlPage("alreadylinked").getContent());
                         return;

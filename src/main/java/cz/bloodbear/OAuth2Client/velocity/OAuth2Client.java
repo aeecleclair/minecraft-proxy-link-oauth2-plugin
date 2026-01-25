@@ -13,11 +13,11 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import cz.bloodbear.OAuth2Client.core.utils.event.EventBus;
-import cz.bloodbear.OAuth2Client.velocity.commands.DiscordCommand;
+import cz.bloodbear.OAuth2Client.velocity.commands.OAuth2Command;
 import cz.bloodbear.OAuth2Client.velocity.events.Blockers;
 import cz.bloodbear.OAuth2Client.velocity.events.PlayerConnection;
 import cz.bloodbear.OAuth2Client.velocity.placeholders.OAuth2IdPlaceholder;
-import cz.bloodbear.OAuth2Client.velocity.placeholders.DiscordUsernamePlaceholder;
+import cz.bloodbear.OAuth2Client.velocity.placeholders.OAuth2AccountUsernamePlaceholder;
 import cz.bloodbear.OAuth2Client.velocity.placeholders.PlayerNamePlaceholder;
 import cz.bloodbear.OAuth2Client.core.records.RoleEntry;
 import cz.bloodbear.OAuth2Client.velocity.utils.*;
@@ -113,9 +113,9 @@ public class OAuth2Client implements cz.bloodbear.OAuth2Client.core.utils.Plugin
             redirect = "http://" + config.getString("webserver.ip", "") + ":" + config.getString("webserver.port", "")  + "/callback";
         }
         this.oAuth2Handler = new OAuth2Handler(
-                config.getString("discord.url", "https://discord.com/api"),
-                config.getString("discord.client.id", ""),
-                config.getString("discord.client.secret", ""),
+                config.getString("oauth2.url", ""),
+                config.getString("oauth2.client.id", ""),
+                config.getString("oauth2.client.secret", ""),
                 redirect
         );
         this.authManager = authManager;
@@ -134,7 +134,7 @@ public class OAuth2Client implements cz.bloodbear.OAuth2Client.core.utils.Plugin
     private void loadPlaceholders() {
         PlaceholderRegistry.registerPlaceholder(new PlayerNamePlaceholder());
         PlaceholderRegistry.registerPlaceholder(new OAuth2IdPlaceholder());
-        PlaceholderRegistry.registerPlaceholder(new DiscordUsernamePlaceholder());
+        PlaceholderRegistry.registerPlaceholder(new OAuth2AccountUsernamePlaceholder());
     }
 
     private void loadHTML() {
@@ -158,15 +158,15 @@ public class OAuth2Client implements cz.bloodbear.OAuth2Client.core.utils.Plugin
         server.getEventManager().register(this, new PlayerConnection());
         server.getEventManager().register(this, new Blockers());
         CommandManager commandManager = server.getCommandManager();
-        CommandMeta discordCommandMeta = commandManager.metaBuilder("discord")
+        CommandMeta OAuth2CommandMeta = commandManager.metaBuilder("oauth2")
                 .plugin(container)
                 .build();
 
-        CommandMeta adminCommandMeta = commandManager.metaBuilder("discordadmin")
+        CommandMeta adminCommandMeta = commandManager.metaBuilder("oauth2admin")
                 .plugin(container)
                 .build();
 
-        commandManager.register(discordCommandMeta, new DiscordCommand());
+        commandManager.register(OAuth2CommandMeta, new OAuth2Command());
 
         databaseManager.deleteLinkCodes();
     }
@@ -217,9 +217,9 @@ public class OAuth2Client implements cz.bloodbear.OAuth2Client.core.utils.Plugin
         return miniMessage.deserialize(input);
     }
 
-    public String getClientId() { return config.getString("discord.client.id", ""); }
+    public String getClientId() { return config.getString("oauth2.client.id", ""); }
     public String getRedirectUri() { return redirect; }
-    public String getAuthUrl() { return config.getString("discord.url", "https://discord.com/api"); }
+    public String getAuthUrl() { return config.getString("oauth2.url", ""); }
 
     public List<RoleEntry> getRoles() { return sync.getRoles("roles"); }
 
@@ -235,13 +235,13 @@ public class OAuth2Client implements cz.bloodbear.OAuth2Client.core.utils.Plugin
         loadHTML();
     }
 
-    public boolean getJoinGuild() {
-        return config.getBoolean("discord.link.join_guild", false);
-    }
+    // public boolean getJoinGuild() {
+    //     return config.getBoolean("oauth2.link.join_guild", false);
+    // }
 
-    public String getGuildId() {
-        return config.getString("discord.guildId", "");
-    }
+    // public String getGuildId() {
+    //     return config.getString("oauth2.guildId", "");
+    // }
 
     public Duration getUptime() { return Duration.ofMillis(System.currentTimeMillis() - startTime); }
 

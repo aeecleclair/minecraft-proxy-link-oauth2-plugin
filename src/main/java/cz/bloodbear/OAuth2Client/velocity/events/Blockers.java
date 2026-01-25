@@ -19,8 +19,8 @@ public class Blockers {
 
         var command = event.getCommand().split(" ")[0];
 
-        if (command.equals("discord")) return;
-        player.sendMessage(OAuth2Client.getInstance().formatMessage("<red>Your account is not linked. Please link your account with /discord link to join the server.</red>"));
+        if (command.equals("oauth2")) return;
+        player.sendMessage(OAuth2Client.getInstance().formatMessage("<red>Your account is not linked. Please link your account with /oauth2 link to join the server.</red>"));
         event.setResult(CommandExecuteEvent.CommandResult.denied());
     }
 
@@ -33,7 +33,7 @@ public class Blockers {
         Set<String> allowed = Set.of("limbo", "limbo1", "limbo2"); // servers allowed before linking
 
         if (!allowed.contains(event.getOriginalServer().getServerInfo().getName())) {
-            event.getPlayer().sendMessage(OAuth2Client.getInstance().formatMessage("<red>Your account is not linked. Please link your account with /discord link to join the server.</red>"));
+            event.getPlayer().sendMessage(OAuth2Client.getInstance().formatMessage("<red>Your account is not linked. Please link your account with /oauth2 link to join the server.</red>"));
             event.setResult(ServerPreConnectEvent.ServerResult.denied());
             if (event.getPlayer().getCurrentServer().isEmpty()) {
                 event.getPlayer().disconnect(OAuth2Client.getInstance().formatMessage("<red>Limbo server is down</red>"));

@@ -1,7 +1,7 @@
 package cz.bloodbear.OAuth2Client.core.utils;
 
 public class UpdateChecker {
-    // private static final String API_URL = "https://api.modrinth.com/v2/project/discordlink/version";
+    // private static final String API_URL = "https://api.modrinth.com/v2/project/oauth2client/version"; // if one day we somehow publish that
     private final String CURRENT_VERSION;
     private final String TARGET_LOADER;
     private String LATEST = null;

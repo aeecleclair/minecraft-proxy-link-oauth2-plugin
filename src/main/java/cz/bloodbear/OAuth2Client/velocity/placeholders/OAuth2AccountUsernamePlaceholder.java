@@ -5,10 +5,10 @@ import cz.bloodbear.OAuth2Client.core.records.OAuth2Account;
 import cz.bloodbear.OAuth2Client.velocity.OAuth2Client;
 import cz.bloodbear.OAuth2Client.velocity.interfaces.Placeholder;
 
-public class DiscordUsernamePlaceholder implements Placeholder {
+public class OAuth2AccountUsernamePlaceholder implements Placeholder {
     @Override
     public String getIdentifier() {
-        return "[discordUsername]";
+        return "[OAuth2 Account Username]";
     }
 
     @Override

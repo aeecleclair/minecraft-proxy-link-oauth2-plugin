@@ -8,7 +8,7 @@ import cz.bloodbear.OAuth2Client.core.utils.TabCompleterHelper;
 import cz.bloodbear.OAuth2Client.velocity.OAuth2Client;
 import cz.bloodbear.OAuth2Client.core.utils.CodeGenerator;
 import cz.bloodbear.OAuth2Client.velocity.utils.DatabaseManager;
-import cz.bloodbear.OAuth2Client.core.utils.DiscordUtils;
+import cz.bloodbear.OAuth2Client.core.utils.OAuth2Utils;
 import cz.bloodbear.OAuth2Client.velocity.utils.PlaceholderRegistry;
 import net.luckperms.api.LuckPermsProvider;
 
@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class DiscordCommand implements SimpleCommand {
-    public DiscordCommand() {
+public class OAuth2Command implements SimpleCommand {
+    public OAuth2Command() {
     }
 
     public void execute(SimpleCommand.Invocation invocation) {
@@ -30,17 +30,17 @@ public class DiscordCommand implements SimpleCommand {
         }
 
         if(!hasPermission(source)) {
-            source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.discord.noperms", (Player)invocation.source())));
+            source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.oauth2.noperms", (Player)invocation.source())));
             return;
         }
 
         if (args.length == 0) {
-            source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.discord.invite", (Player)invocation.source())));
+            source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.oauth2.invite", (Player)invocation.source())));
             return;
         }
 
         if(!hasPermission(source, args[0].toLowerCase())) {
-            source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.discord.noperms", (Player)invocation.source())));
+            source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.oauth2.noperms", (Player)invocation.source())));
             return;
         }
 
@@ -49,11 +49,11 @@ public class DiscordCommand implements SimpleCommand {
 
         if (args[0].equalsIgnoreCase("link")) {
             if (OAuth2Client.getInstance().getAuthManager().isAuthenticated(player.getUniqueId())) {
-                source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.discord.alreadyauthenticated", player)));
+                source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.oauth2.alreadyauthenticated", player)));
                 return;
             }
             /*if (databaseManager.isLinked(player.getUniqueId().toString())) {
-                source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.discord.alreadylinked", player)));
+                source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.oauth2.alreadylinked", player)));
                 return;
             }*/
 
@@ -61,29 +61,29 @@ public class DiscordCommand implements SimpleCommand {
             databaseManager.deleteLinkCodes(player.getUniqueId().toString());
             String code = CodeGenerator.generateCode();
             databaseManager.saveLinkRequest(player.getUniqueId().toString(), code);
-            String url = DiscordUtils.getOAuthLink(OAuth2Client.getInstance().getAuthUrl(), OAuth2Client.getInstance().getClientId(), OAuth2Client.getInstance().getRedirectUri(), code, "API");
-            player.sendMessage(OAuth2Client.getInstance().formatMessage(PlaceholderRegistry.replacePlaceholders(OAuth2Client.getInstance().getMessage("command.discord.link", player).replace("[linkUrl]", url), player)));
+            String url = OAuth2Utils.getOAuth2Client(OAuth2Client.getInstance().getAuthUrl(), OAuth2Client.getInstance().getClientId(), OAuth2Client.getInstance().getRedirectUri(), code, "API");
+            player.sendMessage(OAuth2Client.getInstance().formatMessage(PlaceholderRegistry.replacePlaceholders(OAuth2Client.getInstance().getMessage("command.oauth2.link", player).replace("[linkUrl]", url), player)));
             return;
         }
 
         if (args[0].equalsIgnoreCase("unlink")) {
             if (!databaseManager.isLinked(player.getUniqueId().toString())) {
-                source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.discord.notlinked", player)));
+                source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.oauth2.notlinked", player)));
                 return;
             }
 
             databaseManager.unlinkAccount(player.getUniqueId().toString());
-            source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.discord.unlinked", player)));
+            source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.oauth2.unlinked", player)));
             return;
         }
 
         if (args[0].equalsIgnoreCase("info")) {
             if (!databaseManager.isLinked(player.getUniqueId().toString())) {
-                source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.discord.notlinked", player)));
+                source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.oauth2.notlinked", player)));
                 return;
             }
 
-            source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.discord.info", player)));
+            source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.oauth2.info", player)));
         }
     }
 

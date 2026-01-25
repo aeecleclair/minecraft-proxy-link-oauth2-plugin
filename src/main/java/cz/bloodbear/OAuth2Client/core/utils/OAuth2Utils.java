@@ -1,7 +1,7 @@
 package cz.bloodbear.OAuth2Client.core.utils;
 
-public abstract class DiscordUtils {
-    public static String getOAuthLink(String AuthUrl, String clientId, String redirectUri, String linkCode, String scope) {
+public abstract class OAuth2Utils {
+    public static String getOAuth2Client(String AuthUrl, String clientId, String redirectUri, String linkCode, String scope) {
         return AuthUrl+"/auth/authorize"
                 + "?client_id=" + clientId
                 + "&redirect_uri=" + redirectUri
