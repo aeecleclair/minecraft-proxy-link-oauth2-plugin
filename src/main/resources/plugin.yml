@@ -1,6 +1,6 @@
-name: OAuth2Client
+name: oauth2client
 version: ${project.version}
-main: cz.bloodbear.OAuth2Client.paper.OAuth2Client
+main: cz.bloodbear.oauth2client.paper.oauth2client
 api-version: 1.20
 
 author: Mtn16, warix8

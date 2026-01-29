@@ -1,0 +1,20 @@
+package cz.bloodbear.oauth2client.core.utils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class TabCompleterHelper {
+    public static List<String> getArguments(List<String> choices, String argument) {
+        List<String> arguments = new ArrayList<>();
+        if (argument.isEmpty()) {
+            return choices;
+        }
+        choices.forEach(choice -> {
+            if(choice.toLowerCase().startsWith(argument.toLowerCase())) {
+                arguments.add(choice);
+            }
+        });
+
+        return arguments;
+    }
+}
