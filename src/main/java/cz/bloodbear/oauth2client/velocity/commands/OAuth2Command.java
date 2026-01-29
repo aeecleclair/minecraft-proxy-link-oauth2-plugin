@@ -61,7 +61,7 @@ public class OAuth2Command implements SimpleCommand {
             databaseManager.deleteLinkCodes(player.getUniqueId().toString());
             String code = CodeGenerator.generateCode();
             databaseManager.saveLinkRequest(player.getUniqueId().toString(), code);
-            String url = OAuth2Utils.getOAuth2Client(OAuth2Client.getInstance().getAuthUrl(), OAuth2Client.getInstance().getClientId(), OAuth2Client.getInstance().getRedirectUri(), code, "API");
+            String url = OAuth2Utils.getOAuth2Client(OAuth2Client.getInstance().getAuthUrl(), OAuth2Client.getInstance().getClientId(), OAuth2Client.getInstance().getRedirectUri(), code, "profile");
             player.sendMessage(OAuth2Client.getInstance().formatMessage(PlaceholderRegistry.replacePlaceholders(OAuth2Client.getInstance().getMessage("command.oauth2.link", player).replace("[linkUrl]", url), player)));
             return;
         }
