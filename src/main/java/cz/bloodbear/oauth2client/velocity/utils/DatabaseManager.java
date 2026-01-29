@@ -54,7 +54,7 @@ public class DatabaseManager implements DB {
     }
 
     public void linkAccount(String minecraftUUID, String OAuth2AccountId, String OAuth2AccountUsername) {
-        String sql = "INSERT INTO linked_accounts (oauth2_id, oauth2_username, uuid) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE oauth2_id = ?, oauth2_username = ?";
+        String sql = "INSERT INTO linked_accounts (oauth2_id, oauth2_username, minecraft_uuid) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE oauth2_id = ?, oauth2_username = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, OAuth2AccountId);
             stmt.setString(2, OAuth2AccountUsername);
@@ -66,7 +66,7 @@ public class DatabaseManager implements DB {
             OAuth2Client.getInstance().getLogger().error(e.getMessage());
         }
 
-        String sql2 = "DELETE FROM link_requests WHERE uuid = ?";
+        String sql2 = "DELETE FROM link_requests WHERE minecraft_uuid = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql2)) {
             stmt.setString(1, minecraftUUID);
             stmt.executeUpdate();
@@ -77,10 +77,10 @@ public class DatabaseManager implements DB {
         Optional<Player> player = OAuth2Client.getInstance().getServer().getPlayer(UUID.fromString(minecraftUUID));
     }
 
-    public OAuth2Account getOAuth2Account(String uuid) {
-        String sql = "SELECT oauth2_id, oauth2_username FROM linked_accounts WHERE uuid = ?;";
+    public OAuth2Account getOAuth2Account(String minecraftUUID) {
+        String sql = "SELECT oauth2_id, oauth2_username FROM linked_accounts WHERE minecraft_uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, uuid);
+            stmt.setString(1, minecraftUUID);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return new OAuth2Account(rs.getString("oauth2_id"), rs.getString("oauth2_username"));
@@ -92,7 +92,7 @@ public class DatabaseManager implements DB {
     }
 
     public boolean isOAuth2AccountLinked(String OAuth2AccountId) {
-        String sql = "SELECT uuid FROM linked_accounts WHERE oauth2_id = ?;";
+        String sql = "SELECT minecraft_uuid FROM linked_accounts WHERE oauth2_id = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, OAuth2AccountId);
             ResultSet rs = stmt.executeQuery();
@@ -102,22 +102,22 @@ public class DatabaseManager implements DB {
         }
     }
 
-    public void unlinkAccount(String uuid) {
+    public void unlinkAccount(String MinecraftUUID) {
 
-        String sql = "DELETE FROM linked_accounts WHERE uuid = ?;";
+        String sql = "DELETE FROM linked_accounts WHERE minecraft_uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, uuid);
+            stmt.setString(1, MinecraftUUID);
             stmt.executeUpdate();
         } catch (SQLException e) {
             OAuth2Client.getInstance().getLogger().error(e.getMessage());
         }
     }
 
-    public boolean isLinked(String uuid) {
-        String query = "SELECT COUNT(*) FROM linked_accounts WHERE uuid = ?";
+    public boolean isLinked(String MinecraftUUID) {
+        String query = "SELECT COUNT(*) FROM linked_accounts WHERE minecraft_uuid = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, uuid);
+            stmt.setString(1, MinecraftUUID);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -130,11 +130,11 @@ public class DatabaseManager implements DB {
         return false;
     }
 
-    public void saveLinkRequest(String uuid, String code) {
-        String query = "INSERT INTO link_requests (uuid, code) VALUES (?, ?) " +
+    public void saveLinkRequest(String MinecraftUUID, String code) {
+        String query = "INSERT INTO link_requests (minecraft_uuid, code) VALUES (?, ?) " +
                 "ON DUPLICATE KEY UPDATE code = VALUES(code)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, uuid);
+            stmt.setString(1, MinecraftUUID);
             stmt.setString(2, code);
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -143,12 +143,12 @@ public class DatabaseManager implements DB {
     }
 
     public String getPlayerByCode(String code) {
-        String query = "SELECT uuid FROM link_requests WHERE code = ?";
+        String query = "SELECT minecraft_uuid FROM link_requests WHERE code = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, code);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return rs.getString("uuid");
+                return rs.getString("minecraft_uuid");
             }
         } catch (SQLException e) {
             OAuth2Client.getInstance().getLogger().error(e.getMessage());
@@ -156,10 +156,10 @@ public class DatabaseManager implements DB {
         return null;
     }
 
-    public void deleteLinkCodes(String uuid) {
-        String sql = "DELETE FROM link_requests WHERE uuid = ?";
+    public void deleteLinkCodes(String MinecraftUUID) {
+        String sql = "DELETE FROM link_requests WHERE minecraft_uuid = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, uuid);
+            stmt.setString(1, MinecraftUUID);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -178,12 +178,12 @@ public class DatabaseManager implements DB {
     public Map<String, String> getAllLinkedAccounts() {
         Map<String, String> linkedAccounts = new HashMap<>();
 
-        String query = "SELECT uuid, oauth2_id FROM linked_accounts";
+        String query = "SELECT minecraft_uuid, oauth2_id FROM linked_accounts";
         try (PreparedStatement stmt = connection.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                linkedAccounts.put(rs.getString("uuid"), rs.getString("oauth2_id"));
+                linkedAccounts.put(rs.getString("minecraft_uuid"), rs.getString("oauth2_id"));
             }
         } catch (Exception e) {
             OAuth2Client.getInstance().getLogger().error(e.getMessage());
