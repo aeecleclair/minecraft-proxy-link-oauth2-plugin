@@ -62,7 +62,7 @@ public class OAuth2Handler implements AuthHandler {
     private OAuth2Account getAccountDetails(String accessToken) {
         try {
             Request request = (new Request.Builder())
-                    .url(AUTH_URL+"/users/me")
+                    .url(AUTH_URL+"/auth/userinfo")
                     .header("Authorization", "Bearer " + accessToken)
                     .build();
 
