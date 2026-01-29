@@ -27,10 +27,6 @@ public interface Plugin {
 
     boolean isPlaceholderAPIEnabled();
 
-    boolean getJoinGuild();
-
-    String getGuildId();
-
     Duration getUptime();
 
     EventBus getEventBus();
