@@ -20,7 +20,7 @@ public class DatabaseManager implements DB {
         } catch (ClassNotFoundException e) {
             OAuth2Client.getInstance().getLogger().error(e.getMessage());
         }
-        String url = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=" + useSSL + "&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+        String url = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=" + useSSL + "&allowPublicKeyRetrieval=true&serverTimezone=UTC&autoReconnect=true";
         try {
             connection = DriverManager.getConnection(url, username, password);
             createTable();
