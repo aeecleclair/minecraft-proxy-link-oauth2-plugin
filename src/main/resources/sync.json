@@ -17,7 +17,7 @@
     "enabled": false,
     "permission": {
       "required": false,
-      "permission": "discordlink.name.sync"
+      "permission": "oauth2client.name.sync"
     }
   }
 }

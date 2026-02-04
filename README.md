@@ -1,45 +1,44 @@
-## 📦 DiscordLink - Seamless Discord Integration for Velocity and Paper
+## 📦 OAuth2Client - Seamless OAuth2 Integration for Velocity and Paper
 
-**DiscordLink** is a lightweight, modern plugin that provides seamless, real-time integration between your Velocity Minecraft server and your Discord community.
+**OAuth2Client** is a lightweight, modern plugin that provides seamless, real-time integration between your Velocity Minecraft server and your OIDC provider.
 
-With DiscordLink, players can securely link their Minecraft accounts with Discord using OAuth2 — no need to manually enter codes.
+With OAuth2Client, players can securely link their Minecraft accounts with your OIDC provider using OAuth2 — no need to manually enter codes.
 
 ---
 
 ### ✨ Key Features
 
-* 🔗 **Account Linking via OAuth2**
-  Players can easily and securely link their accounts through a simple Discord authorization flow — no code entry required.
+- 🔗 **Account Linking via OAuth2**
+  Players can easily and securely link their accounts through a simple OIDC authorization flow — no code entry required.
 
-* ⚙️ **Highly Configurable**
+- ⚙️ **Highly Configurable**
   Easily adjust settings and customize the integration to fit your server's needs.
 
-* 🚀 **Optimized for Performance**
+- 🚀 **Optimized for Performance**
   Designed specifically for Velocity to ensure minimal resource usage and fast response times.
 
-* 🧩 **PlaceholderAPI Support (only on Paper)**
-  Feel free to use placeholders from PlaceholderAPI. DiscordLink itself provides placeholders for Discord account name and id.
+- 🧩 **PlaceholderAPI Support (only on Paper)**
+  Feel free to use placeholders from PlaceholderAPI. OAuth2Client itself provides placeholders for OIDC provider account name and id.
 
-* 🤖 **Event based commands**
+- 🤖 **Event based commands**
   You can define your own commands when someone links / unlinks their account. You can also use placeholders.
 
 ---
 
 ### 🔧 Requirements
 
-* Velocity or Paper Server
-* [LuckPerms](https://modrinth.com/plugin/luckperms) plugin on your server
-* Java 17 or newer
-* MySQL or MariaDB database
-* Open port for web server
-* A Discord bot token with the required permissions
-* A registered OAuth2 Discord application
+- Velocity or Paper Server
+- [LuckPerms](https://modrinth.com/plugin/luckperms) plugin on your server
+- Java 17 or newer
+- MySQL or MariaDB database
+- Open port for web server
+- An OIDC provider that supports OAuth2
 
 ---
 
 ### 📂 Open Source & Extensible
 
-DiscordLink is open source under the **MIT License** with a dedicated **Patent License Addendum.**
+OAuth2Client is open source under the **MIT License** with a dedicated **Patent License Addendum.**
 You are encouraged to contribute, build your own versions, or replace bundled libraries to suit your needs.
 
 ---
@@ -59,8 +58,8 @@ Feel free to open an issue or submit a pull request on the project’s GitHub pa
 
 ### 🎈 Future plans
 
-* Chat synchronization
-* Nickname synchronization
+- Chat synchronization
+- Nickname synchronization
 
 ---
 
@@ -80,7 +79,7 @@ This project uses [Maven](https://maven.apache.org/) as its build system.
 ### Requirements
 
 - Java 17 or newer
-- Maven 3.6+  
+- Maven 3.6+
 
 ### How to Build
 
@@ -88,7 +87,7 @@ To build the plugin JAR, run:
 
 ```bash
 mvn clean package
-````
+```
 
 ### Customizing Dependencies
 

@@ -1,34 +1,25 @@
-name: DiscordLink
+name: oauth2client
 version: ${project.version}
-main: cz.bloodbear.discordLink.paper.DiscordLink
+main: cz.bloodbear.oauth2client.paper.oauth2client
 api-version: 1.20
 
-author: Mtn16
-description: Seamless Discord Integration for Velocity and Paper
-website: https://github.com/Mtn16/DiscordLink
+author: Mtn16, warix8
+description: Seamless OAuth2 Integration for Velocity and Paper
+website: https://github.com/aeecleclair/minecraft-proxy-link-oauth2-plugin
 depend: [LuckPerms]
 softdepend: [PlaceholderAPI, Plan]
 
-commands:
-  discordadmin:
-    description: DiscordLink admin command
-    usage: /discordadmin <resync|resyncAll> [player]
-    permission: discordlink.admin
-  discord:
-    description: DiscordLink admin command
-    usage: /discord [link|unlink|info]
-
 permissions:
-  discordlink.player:
+  oauth2client.player:
     default: notop
     children:
-      discordlink.player.link: true
-      discordlink.player.unlink: true
-      discordlink.player.info: true
+      oauth2client.player.link: true
+      oauth2client.player.unlink: true
+      oauth2client.player.info: true
 
-  discordlink.admin:
+  oauth2client.admin:
     default: op
     children:
-      discordlink.admin.reload: true
-      discordlink.admin.resync: true
-      discordlink.admin.resyncall: true
+      oauth2client.admin.reload: true
+      oauth2client.admin.resync: true
+      oauth2client.admin.resyncall: true
