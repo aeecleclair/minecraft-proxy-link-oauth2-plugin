@@ -6,8 +6,6 @@ import cz.bloodbear.oauth2client.core.utils.DB;
 import cz.bloodbear.oauth2client.velocity.OAuth2Client;
 
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -163,42 +161,6 @@ public class DatabaseManager implements DB {
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public void deleteLinkCodes() {
-        String sql = "DELETE FROM link_requests";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Map<String, String> getAllLinkedAccounts() {
-        Map<String, String> linkedAccounts = new HashMap<>();
-
-        String query = "SELECT minecraft_uuid, oauth2_id FROM linked_accounts";
-        try (PreparedStatement stmt = connection.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
-
-            while (rs.next()) {
-                linkedAccounts.put(rs.getString("minecraft_uuid"), rs.getString("oauth2_id"));
-            }
-        } catch (Exception e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
-        }
-
-        return linkedAccounts;
-    }
-
-    public void close() {
-        try {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
-        } catch (SQLException e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
         }
     }
 }

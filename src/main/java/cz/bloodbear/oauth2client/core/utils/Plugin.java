@@ -22,12 +22,4 @@ public interface Plugin {
     String getClientId();
 
     String getRedirectUri();
-
-    List<RoleEntry> getRoles();
-
-    boolean isPlaceholderAPIEnabled();
-
-    Duration getUptime();
-
-    EventBus getEventBus();
 }

@@ -1,11 +1,6 @@
 package cz.bloodbear.oauth2client.velocity;
 
 import com.google.inject.Inject;
-import com.velocitypowered.api.command.CommandManager;
-import com.velocitypowered.api.command.CommandMeta;
-import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
-import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
@@ -13,23 +8,18 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import cz.bloodbear.oauth2client.core.utils.event.EventBus;
-import cz.bloodbear.oauth2client.velocity.commands.OAuth2Command;
-import cz.bloodbear.oauth2client.velocity.events.Blockers;
-import cz.bloodbear.oauth2client.velocity.events.PlayerConnection;
 import cz.bloodbear.oauth2client.velocity.placeholders.OAuth2IdPlaceholder;
 import cz.bloodbear.oauth2client.velocity.placeholders.OAuth2AccountUsernamePlaceholder;
 import cz.bloodbear.oauth2client.velocity.placeholders.PlayerNamePlaceholder;
-import cz.bloodbear.oauth2client.core.records.RoleEntry;
 import cz.bloodbear.oauth2client.velocity.utils.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.io.IOException;
+
 import java.nio.file.Path;
-import java.time.Duration;
-import java.util.List;
+
 
 @Plugin(id = "oauth2client", name = "OAuth2Client", version = "25.7",
         authors = {"Mtn16", "warix8"}, url = "https://github.com/aeecleclair/minecraft-proxy-link-oauth2-plugin",
@@ -146,37 +136,6 @@ public class OAuth2Client implements cz.bloodbear.oauth2client.core.utils.Plugin
         this.alreadyLinkedPage = new HtmlPage(dataDirectory, "alreadylinked.html");
     }
 
-    @Subscribe
-    public void onProxyInitialization(ProxyInitializeEvent event) {
-        try {
-            webServer.start();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-            server.shutdown();
-        }
-
-        server.getEventManager().register(this, new PlayerConnection());
-        server.getEventManager().register(this, new Blockers());
-        CommandManager commandManager = server.getCommandManager();
-        CommandMeta OAuth2CommandMeta = commandManager.metaBuilder("oauth2")
-                .plugin(container)
-                .build();
-
-        CommandMeta adminCommandMeta = commandManager.metaBuilder("oauth2admin")
-                .plugin(container)
-                .build();
-
-        commandManager.register(OAuth2CommandMeta, new OAuth2Command());
-
-        databaseManager.deleteLinkCodes();
-    }
-
-    @Subscribe
-    public void onProxyShutdown(ProxyShutdownEvent event) {
-        databaseManager.close();
-        webServer.stop();
-    }
-
     public static OAuth2Client getInstance() { return instance; }
 
     public @NotNull String getMessage(String key) {
@@ -221,19 +180,6 @@ public class OAuth2Client implements cz.bloodbear.oauth2client.core.utils.Plugin
     public String getRedirectUri() { return redirect; }
     public String getAuthUrl() { return config.getString("oauth2.url", ""); }
 
-    public List<RoleEntry> getRoles() { return sync.getRoles("roles"); }
-
-    public boolean isPlaceholderAPIEnabled() {
-        return false;
-    }
-
-    public void reloadConfig() {
-        config.reload();
-        messages.reload();
-        sync.reload();
-
-        loadHTML();
-    }
 
     // public boolean getJoinGuild() {
     //     return config.getBoolean("oauth2.link.join_guild", false);
@@ -243,10 +189,4 @@ public class OAuth2Client implements cz.bloodbear.oauth2client.core.utils.Plugin
     //     return config.getString("oauth2.guildId", "");
     // }
 
-    public Duration getUptime() { return Duration.ofMillis(System.currentTimeMillis() - startTime); }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
 }

@@ -2,7 +2,6 @@ package cz.bloodbear.oauth2client.core.utils;
 
 import cz.bloodbear.oauth2client.core.records.OAuth2Account;
 
-import java.util.Map;
 
 public interface DB {
 
@@ -22,9 +21,4 @@ public interface DB {
 
     void deleteLinkCodes(String uuid);
 
-    void deleteLinkCodes();
-
-    Map<String, String> getAllLinkedAccounts();
-
-    void close();
 }

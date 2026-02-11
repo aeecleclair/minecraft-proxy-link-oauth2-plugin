@@ -29,32 +29,6 @@ public class WebServer {
         this.domain = domain;
     }
 
-    public void start() throws IOException {
-        Executor executor = Executors.newFixedThreadPool(4, r -> {
-            Thread t = new Thread(r);
-            t.setDaemon(false);
-            t.setName("HttpServer-Worker");
-            return t;
-        });
-        server = HttpServer.create(new InetSocketAddress(port), 0);
-        server.createContext("/callback", new OAuthCallbackHandler());
-        server.setExecutor(executor);
-        server.start();
-        OAuth2Client.getInstance().getLogger().info(ConsoleColor.green("Webserver is running on port " + port));
-        if(useDomain) {
-            OAuth2Client.getInstance().getLogger().info(ConsoleColor.green("using custom domain " + domain));
-        } else {
-            OAuth2Client.getInstance().getLogger().warn(ConsoleColor.yellow("Webserver is not using domain!"));
-        }
-    }
-
-    public void stop() {
-        if(server != null) {
-            server.stop(0);
-            OAuth2Client.getInstance().getLogger().info(ConsoleColor.green("Webserver disabled."));
-        }
-    }
-
     private class OAuthCallbackHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
