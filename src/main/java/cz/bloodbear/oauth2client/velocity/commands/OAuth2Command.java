@@ -4,20 +4,49 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.Player;
-import cz.bloodbear.oauth2client.core.utils.TabCompleterHelper;
 import cz.bloodbear.oauth2client.velocity.OAuth2Client;
-import cz.bloodbear.oauth2client.core.utils.CodeGenerator;
 import cz.bloodbear.oauth2client.velocity.utils.DatabaseManager;
-import cz.bloodbear.oauth2client.core.utils.OAuth2Utils;
 import cz.bloodbear.oauth2client.velocity.utils.PlaceholderRegistry;
 import net.luckperms.api.LuckPermsProvider;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 public class OAuth2Command implements SimpleCommand {
     public OAuth2Command() {
+    }
+
+    static String generateCode() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[16];
+        random.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
+
+    public static String getOAuth2Client(String AuthUrl, String clientId, String redirectUri, String linkCode, String scope) {
+        return AuthUrl+"/auth/authorize"
+                + "?client_id=" + clientId
+                + "&redirect_uri=" + redirectUri
+                + "&response_type=code"
+                + "&scope=" + scope
+                + "&state=" + linkCode;
+    }
+
+    static List<String> getArguments(List<String> choices, String argument) {
+        List<String> arguments = new ArrayList<>();
+        if (argument.isEmpty()) {
+            return choices;
+        }
+        choices.forEach(choice -> {
+            if(choice.toLowerCase().startsWith(argument.toLowerCase())) {
+                arguments.add(choice);
+            }
+        });
+
+        return arguments;
     }
 
     public void execute(SimpleCommand.Invocation invocation) {
@@ -59,9 +88,9 @@ public class OAuth2Command implements SimpleCommand {
 
 
             databaseManager.deleteLinkCodes(player.getUniqueId().toString());
-            String code = CodeGenerator.generateCode();
+            String code = generateCode();
             databaseManager.saveLinkRequest(player.getUniqueId().toString(), code);
-            String url = OAuth2Utils.getOAuth2Client(OAuth2Client.getInstance().getAuthUrl(), OAuth2Client.getInstance().getClientId(), OAuth2Client.getInstance().getRedirectUri(), code, "profile");
+            String url = getOAuth2Client(OAuth2Client.getInstance().getAuthUrl(), OAuth2Client.getInstance().getClientId(), OAuth2Client.getInstance().getRedirectUri(), code, "profile");
             player.sendMessage(OAuth2Client.getInstance().formatMessage(PlaceholderRegistry.replacePlaceholders(OAuth2Client.getInstance().getMessage("command.oauth2.link", player).replace("[linkUrl]", url), player)));
             return;
         }
@@ -99,7 +128,7 @@ public class OAuth2Command implements SimpleCommand {
             if(invocation.arguments().length == 0) {
                 return choices;
             }
-            return TabCompleterHelper.getArguments(finalChoices, invocation.arguments()[0]);
+            return getArguments(finalChoices, invocation.arguments()[0]);
         }
 
         return new ArrayList<>();

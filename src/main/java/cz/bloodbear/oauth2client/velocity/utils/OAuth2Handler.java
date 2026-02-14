@@ -3,13 +3,12 @@ package cz.bloodbear.oauth2client.velocity.utils;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import cz.bloodbear.oauth2client.core.records.OAuth2Account;
-import cz.bloodbear.oauth2client.core.utils.AuthHandler;
 import cz.bloodbear.oauth2client.velocity.OAuth2Client;
 import okhttp3.*;
 
 import java.io.IOException;
 
-public class OAuth2Handler implements AuthHandler {
+public class OAuth2Handler {
     private final String AUTH_URL;
     private final String CLIENT_ID;
     private final String CLIENT_SECRET;
