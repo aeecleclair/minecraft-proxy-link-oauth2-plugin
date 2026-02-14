@@ -12,14 +12,12 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import cz.bloodbear.oauth2client.core.utils.event.EventBus;
 import cz.bloodbear.oauth2client.velocity.commands.OAuth2Command;
 import cz.bloodbear.oauth2client.velocity.events.Blockers;
 import cz.bloodbear.oauth2client.velocity.events.PlayerConnection;
 import cz.bloodbear.oauth2client.velocity.placeholders.OAuth2IdPlaceholder;
 import cz.bloodbear.oauth2client.velocity.placeholders.OAuth2AccountUsernamePlaceholder;
 import cz.bloodbear.oauth2client.velocity.placeholders.PlayerNamePlaceholder;
-import cz.bloodbear.oauth2client.core.records.RoleEntry;
 import cz.bloodbear.oauth2client.velocity.utils.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -29,7 +27,6 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.List;
 
 @Plugin(id = "oauth2client", name = "OAuth2Client", version = "25.7",
         authors = {"Mtn16", "warix8"}, url = "https://github.com/aeecleclair/minecraft-proxy-link-oauth2-plugin",
@@ -37,7 +34,7 @@ import java.util.List;
         dependencies = {
             @Dependency(id = "plan", optional = true)
         })
-public class OAuth2Client implements cz.bloodbear.oauth2client.core.utils.Plugin {
+public class OAuth2Client {
     private static OAuth2Client instance;
 
     @Inject
@@ -48,7 +45,6 @@ public class OAuth2Client implements cz.bloodbear.oauth2client.core.utils.Plugin
 
     private final JsonConfig config;
     private final JsonConfig messages;
-    private final JsonConfig sync;
     private final MiniMessage miniMessage;
 
     private HtmlPage linkedPage;
@@ -64,8 +60,6 @@ public class OAuth2Client implements cz.bloodbear.oauth2client.core.utils.Plugin
     private final OAuth2Handler oAuth2Handler;
     private final AuthManager authManager;
 
-    private EventBus eventBus;
-
     private long startTime;
 
     @Inject
@@ -79,10 +73,7 @@ public class OAuth2Client implements cz.bloodbear.oauth2client.core.utils.Plugin
 
         this.config = new JsonConfig(dataDirectory, "config.json");
         this.messages = new JsonConfig(dataDirectory, "messages.json");
-        this.sync = new JsonConfig(dataDirectory, "sync.json");
         this.miniMessage = MiniMessage.miniMessage();
-
-        this.eventBus = new EventBus();
 
         startTime = System.currentTimeMillis();
 
@@ -123,14 +114,6 @@ public class OAuth2Client implements cz.bloodbear.oauth2client.core.utils.Plugin
         loadPlaceholders();
     }
 
-    // private void checkVersion() {
-    //     String pluginVersion = getServer().getPluginManager().getPlugin("OAuth2Client").get().getDescription().getVersion().get();
-    //     UpdateChecker updateChecker = new UpdateChecker(pluginVersion, "velocity");
-    //     if(updateChecker.isNewerVersionAvailable()) {
-    //         getServer().getConsoleCommandSource().sendMessage(miniMessage.deserialize("<yellow><b>Update notification:</b></yellow> <green>A OAuth2Client update is available!</green> <newline><newline><yellow>Your version:</yellow> <green>"+ pluginVersion +"</green><newline><yellow>Latest version:</yellow> <green>" + updateChecker.getLatestVersion() + "</green>"));
-    //     }
-    // }
-
     private void loadPlaceholders() {
         PlaceholderRegistry.registerPlaceholder(new PlayerNamePlaceholder());
         PlaceholderRegistry.registerPlaceholder(new OAuth2IdPlaceholder());
@@ -158,11 +141,7 @@ public class OAuth2Client implements cz.bloodbear.oauth2client.core.utils.Plugin
         server.getEventManager().register(this, new PlayerConnection());
         server.getEventManager().register(this, new Blockers());
         CommandManager commandManager = server.getCommandManager();
-        CommandMeta OAuth2CommandMeta = commandManager.metaBuilder("oauth2")
-                .plugin(container)
-                .build();
-
-        CommandMeta adminCommandMeta = commandManager.metaBuilder("oauth2admin")
+        CommandMeta OAuth2CommandMeta = commandManager.metaBuilder("myecl")
                 .plugin(container)
                 .build();
 
@@ -221,32 +200,14 @@ public class OAuth2Client implements cz.bloodbear.oauth2client.core.utils.Plugin
     public String getRedirectUri() { return redirect; }
     public String getAuthUrl() { return config.getString("oauth2.url", ""); }
 
-    public List<RoleEntry> getRoles() { return sync.getRoles("roles"); }
-
-    public boolean isPlaceholderAPIEnabled() {
-        return false;
-    }
-
+    // TODO: use that
     public void reloadConfig() {
-        config.reload();
-        messages.reload();
-        sync.reload();
-
+        config.load();
+        messages.load();
         loadHTML();
     }
 
-    // public boolean getJoinGuild() {
-    //     return config.getBoolean("oauth2.link.join_guild", false);
-    // }
-
-    // public String getGuildId() {
-    //     return config.getString("oauth2.guildId", "");
-    // }
-
+    // TODO: use that in /myecl info
     public Duration getUptime() { return Duration.ofMillis(System.currentTimeMillis() - startTime); }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
 }

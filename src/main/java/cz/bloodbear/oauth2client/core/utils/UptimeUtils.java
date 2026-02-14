@@ -3,6 +3,7 @@ package cz.bloodbear.oauth2client.core.utils;
 import java.time.Duration;
 
 public class UptimeUtils {
+    // TODO: use that. And we don't need a separate class for a Duration to String method
     public static String formatDuration(Duration duration) {
         long seconds = duration.getSeconds();
 

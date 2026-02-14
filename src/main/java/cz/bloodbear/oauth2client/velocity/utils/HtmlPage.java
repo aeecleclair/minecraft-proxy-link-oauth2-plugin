@@ -1,6 +1,5 @@
 package cz.bloodbear.oauth2client.velocity.utils;
 
-import cz.bloodbear.oauth2client.core.utils.Page;
 import cz.bloodbear.oauth2client.velocity.OAuth2Client;
 
 import java.io.IOException;
@@ -11,7 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
-public class HtmlPage implements Page {
+public class HtmlPage {
     private final Path pagePath;
     private String content;
 

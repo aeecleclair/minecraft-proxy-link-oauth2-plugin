@@ -47,7 +47,7 @@ public class OAuth2Command implements SimpleCommand {
         DatabaseManager databaseManager = OAuth2Client.getInstance().getDatabaseManager();
         Player player = (Player)invocation.source();
 
-        if (args[0].equalsIgnoreCase("link")) {
+        if (args[0].equalsIgnoreCase("login")) {
             if (OAuth2Client.getInstance().getAuthManager().isAuthenticated(player.getUniqueId())) {
                 source.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.oauth2.alreadyauthenticated", player)));
                 return;

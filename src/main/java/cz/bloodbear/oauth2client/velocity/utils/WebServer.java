@@ -46,7 +46,7 @@ public class WebServer {
         } else {
             OAuth2Client.getInstance().getLogger().warn(ConsoleColor.yellow("Webserver is not using domain!"));
         }
-    }
+    }   
 
     public void stop() {
         if(server != null) {
@@ -77,41 +77,30 @@ public class WebServer {
                 String code = getQueryParam(query, "code");
 
                 if(state == null) {
-                    // sendResponse(exchange, 400, "State parameter missing");
                     sendHtmlResponse(exchange, 400, OAuth2Client.getInstance().getHtmlPage("stateMissing").getContent());
                     return;
                 }
 
                 if(code == null) {
-                    //sendResponse(exchange, 400, "Code parameter missing");
                     sendHtmlResponse(exchange, 400, OAuth2Client.getInstance().getHtmlPage("codeMissing").getContent());
                     return;
                 }
 
                 String uuid = OAuth2Client.getInstance().getDatabaseManager().getPlayerByCode(state);
                 if(uuid == null) {
-                    //sendResponse(exchange, 400, "Invalid or expired code");
                     sendHtmlResponse(exchange, 400, OAuth2Client.getInstance().getHtmlPage("invalid").getContent());
                     return;
                 }
 
                 OAuth2Account OAuth2Account = OAuth2Client.getInstance().getOAuth2Handler().getOAuth2Account(code);
                 if(OAuth2Account == null) {
-                    //sendResponse(exchange, 400, "Failed to verify account.");
                     sendHtmlResponse(exchange, 400, OAuth2Client.getInstance().getHtmlPage("failed").getContent());
                     return;
                 }
 
-                // From this point, we have a valid UUID and an account from the OAuth2 provider
-
-                // We would like to check if the OAuth2 provider account is already linked
-                // And if the current Minecraft UUID corresponds to this account
-                /*if(oauth2client.getInstance().getDatabaseManager().isOAuth2AccountLinked(OAuth2Account.id()) &&
-                !oauth2client.getInstance().getDatabaseManager().getOAuth2Account(uuid).id().equals(OAuth2Account.id())) {
-                    sendHtmlResponse(exchange, 400, oauth2client.getInstance().getHtmlPage("alreadylinked").getContent());
-                    return;
-                }*/
-
+                // From this point, we have a valid UUID and an account from the OAuth2 provider.
+                // We would like to check if the OAuth2 provider account is already linked,
+                // and if the current Minecraft UUID corresponds to this account.
 
                 if(OAuth2Client.getInstance().getDatabaseManager().isLinked(uuid)) {
 

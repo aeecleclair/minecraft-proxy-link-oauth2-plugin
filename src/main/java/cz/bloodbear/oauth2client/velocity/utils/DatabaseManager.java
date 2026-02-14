@@ -2,16 +2,13 @@ package cz.bloodbear.oauth2client.velocity.utils;
 
 import com.velocitypowered.api.proxy.Player;
 import cz.bloodbear.oauth2client.core.records.OAuth2Account;
-import cz.bloodbear.oauth2client.core.utils.DB;
 import cz.bloodbear.oauth2client.velocity.OAuth2Client;
 
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-public class DatabaseManager implements DB {
+public class DatabaseManager {
     private Connection connection;
 
     public DatabaseManager(String host, int port, String database, String username, String password, boolean useSSL) {
@@ -173,23 +170,6 @@ public class DatabaseManager implements DB {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public Map<String, String> getAllLinkedAccounts() {
-        Map<String, String> linkedAccounts = new HashMap<>();
-
-        String query = "SELECT minecraft_uuid, oauth2_id FROM linked_accounts";
-        try (PreparedStatement stmt = connection.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
-
-            while (rs.next()) {
-                linkedAccounts.put(rs.getString("minecraft_uuid"), rs.getString("oauth2_id"));
-            }
-        } catch (Exception e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
-        }
-
-        return linkedAccounts;
     }
 
     public void close() {

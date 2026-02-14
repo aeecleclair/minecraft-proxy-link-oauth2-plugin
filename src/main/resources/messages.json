@@ -7,7 +7,7 @@
       "playeronly": "<red>This command is only for players!</red>"
     },
     "oauth2": {
-      "usage": "<red>Usage: /oauth2 [link|unlink|info]</red>",
+      "usage": "<red>Usage: /myecl [login|unlink|info]</red>",
       "invite": "<blue>Join your OAuth2 provider <underlined><click:open_url:'https://example.org'>here</click></underlined></blue>",
       "alreadylinked": "<red>Your account is already linked.</red>",
       "linked": "<green>Your account was linked successfully. ([OAuth2Username])</green>",

@@ -9,8 +9,9 @@ public class PlayerConnection {
 
     @Subscribe
     public void onPostLogin(PostLoginEvent event) {
+        // TODO: is there a use to it?
         if(OAuth2Client.getInstance().getDatabaseManager().isLinked(event.getPlayer().getUniqueId().toString())) {
-
+            // empty
         }
     }
 
