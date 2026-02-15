@@ -15,14 +15,14 @@ public class DatabaseManager {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
+            OAuth2Client.getLogger().error(e.getMessage());
         }
         String url = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=" + useSSL + "&allowPublicKeyRetrieval=true&serverTimezone=UTC&autoReconnect=true";
         try {
             connection = DriverManager.getConnection(url, username, password);
             createTable();
         } catch (SQLException e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
+            OAuth2Client.getLogger().error(e.getMessage());
         }
     }
 
@@ -35,7 +35,7 @@ public class DatabaseManager {
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
+            OAuth2Client.getLogger().error(e.getMessage());
         }
 
         String sql2 = "CREATE TABLE IF NOT EXISTS link_requests ("
@@ -46,7 +46,7 @@ public class DatabaseManager {
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(sql2);
         } catch (SQLException e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
+            OAuth2Client.getLogger().error(e.getMessage());
         }
     }
 
@@ -60,7 +60,7 @@ public class DatabaseManager {
             stmt.setString(5, OAuth2AccountUsername);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
+            OAuth2Client.getLogger().error(e.getMessage());
         }
 
         String sql2 = "DELETE FROM link_requests WHERE minecraft_uuid = ?";
@@ -68,7 +68,7 @@ public class DatabaseManager {
             stmt.setString(1, minecraftUUID);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
+            OAuth2Client.getLogger().error(e.getMessage());
         }
 
         Optional<Player> player = OAuth2Client.getInstance().getServer().getPlayer(UUID.fromString(minecraftUUID));
@@ -83,7 +83,7 @@ public class DatabaseManager {
                 return new OAuth2Account(rs.getString("oauth2_id"), rs.getString("oauth2_username"));
             }
         } catch (SQLException e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
+            OAuth2Client.getLogger().error(e.getMessage());
         }
         return null;
     }
@@ -106,7 +106,7 @@ public class DatabaseManager {
             stmt.setString(1, MinecraftUUID);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
+            OAuth2Client.getLogger().error(e.getMessage());
         }
     }
 
@@ -122,7 +122,7 @@ public class DatabaseManager {
                 }
             }
         } catch (SQLException e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
+            OAuth2Client.getLogger().error(e.getMessage());
         }
         return false;
     }
@@ -135,7 +135,7 @@ public class DatabaseManager {
             stmt.setString(2, code);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
+            OAuth2Client.getLogger().error(e.getMessage());
         }
     }
 
@@ -148,7 +148,7 @@ public class DatabaseManager {
                 return rs.getString("minecraft_uuid");
             }
         } catch (SQLException e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
+            OAuth2Client.getLogger().error(e.getMessage());
         }
         return null;
     }
@@ -178,7 +178,7 @@ public class DatabaseManager {
                 connection.close();
             }
         } catch (SQLException e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
+            OAuth2Client.getLogger().error(e.getMessage());
         }
     }
 }

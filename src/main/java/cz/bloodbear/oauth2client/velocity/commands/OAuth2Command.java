@@ -27,7 +27,7 @@ public class OAuth2Command implements SimpleCommand {
     }
 
     public static String getOAuth2Client(String AuthUrl, String clientId, String redirectUri, String linkCode, String scope) {
-        return AuthUrl+"/auth/authorize"
+        return AuthUrl + "/auth/authorize"
                 + "?client_id=" + clientId
                 + "&redirect_uri=" + redirectUri
                 + "&response_type=code"

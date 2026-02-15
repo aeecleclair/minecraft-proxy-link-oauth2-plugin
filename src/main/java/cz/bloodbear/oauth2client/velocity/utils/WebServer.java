@@ -42,18 +42,18 @@ public class WebServer {
         server.createContext("/callback", new OAuthCallbackHandler());
         server.setExecutor(executor);
         server.start();
-        OAuth2Client.getInstance().getLogger().info(ConsoleColor.green("Webserver is running on port " + port));
+        OAuth2Client.getLogger().info("Webserver is running on port " + port);
         if(useDomain) {
-            OAuth2Client.getInstance().getLogger().info(ConsoleColor.green("using custom domain " + domain));
+            OAuth2Client.getLogger().info("using custom domain " + domain);
         } else {
-            OAuth2Client.getInstance().getLogger().warn(ConsoleColor.yellow("Webserver is not using domain!"));
+            OAuth2Client.getLogger().warn("Webserver is not using domain!");
         }
     }   
 
     public void stop() {
         if(server != null) {
             server.stop(0);
-            OAuth2Client.getInstance().getLogger().info(ConsoleColor.green("Webserver disabled."));
+            OAuth2Client.getLogger().info("Webserver disabled.");
         }
     }
 
@@ -131,7 +131,7 @@ public class WebServer {
 
 
             } catch (Exception e) {
-                OAuth2Client.getInstance().getLogger().error(e.getMessage());
+                OAuth2Client.getLogger().error(e.getMessage());
             }
         }
     }

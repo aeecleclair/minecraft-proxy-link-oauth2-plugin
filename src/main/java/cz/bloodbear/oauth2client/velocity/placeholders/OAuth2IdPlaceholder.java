@@ -17,7 +17,6 @@ public class OAuth2IdPlaceholder implements Placeholder {
             OAuth2Account OAuth2Account = OAuth2Client.getInstance().getDatabaseManager().getOAuth2Account(player.getUniqueId().toString());
             String id = OAuth2Account != null ? OAuth2Account.id() : OAuth2Client.getInstance().getMessage("generic.none");
             return input.replace(getIdentifier(), id);
-            player.
         }
         return input;
     }

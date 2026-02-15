@@ -12,6 +12,7 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import cz.bloodbear.oauth2client.core.utils.ConsoleColor;
 import cz.bloodbear.oauth2client.velocity.commands.OAuth2Command;
 import cz.bloodbear.oauth2client.velocity.events.Blockers;
 import cz.bloodbear.oauth2client.velocity.events.PlayerConnection;
@@ -38,7 +39,7 @@ public class OAuth2Client {
     private static OAuth2Client instance;
 
     @Inject
-    private final Logger logger;
+    public final ConsoleColor logger;
     private final ProxyServer server;
     private final Path dataDirectory;
     private final PluginContainer container;
@@ -67,7 +68,7 @@ public class OAuth2Client {
         instance = this;
 
         this.server = server;
-        this.logger = logger;
+        this.logger = new ConsoleColor(logger);
         this.dataDirectory = dataDirectory;
         this.container = container;
 
@@ -189,7 +190,8 @@ public class OAuth2Client {
 
     public AuthManager getAuthManager() { return authManager; }
 
-    public Logger getLogger() { return logger; }
+    public static ConsoleColor getLogger() { return getInstance().logger; }
+
     public ProxyServer getServer() { return server; }
 
     public Component formatMessage(String input) {

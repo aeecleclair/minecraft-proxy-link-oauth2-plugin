@@ -39,7 +39,7 @@ public class HtmlPage {
         try {
             content = Files.readString(pagePath, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
+            OAuth2Client.getLogger().error(e.getMessage());
         }
     }
 

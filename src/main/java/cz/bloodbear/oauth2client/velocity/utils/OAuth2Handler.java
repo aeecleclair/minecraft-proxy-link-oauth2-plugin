@@ -53,7 +53,7 @@ public class OAuth2Handler {
             OAuth2Account accountDetails = getAccountDetails(accessToken);
             return new OAuth2Account(accountDetails.id(), accountDetails.username());
         } catch (IOException e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
+            OAuth2Client.getLogger().error(e.getMessage());
         }
         return null;
     }
@@ -76,7 +76,7 @@ public class OAuth2Handler {
                 }
             }
         } catch (IOException e) {
-            OAuth2Client.getInstance().getLogger().error(e.getMessage());
+            OAuth2Client.getLogger().error(e.getMessage());
         }
         return null;
     }
