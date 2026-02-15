@@ -18,18 +18,9 @@
   },
   "oauth2": {
     "url": "https://youroauth2provider.com",
-    "guildId": "",
     "client": {
       "id": "",
       "secret": ""
-    },
-    "link": {
-      "join_guild": false
-    }
-  },
-  "plugin": {
-    "updater": {
-      "enabled": true
     }
   }
 }

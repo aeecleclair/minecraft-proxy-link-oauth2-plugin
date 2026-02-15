@@ -8,7 +8,7 @@ import cz.bloodbear.oauth2client.velocity.interfaces.Placeholder;
 public class OAuth2AccountUsernamePlaceholder implements Placeholder {
     @Override
     public String getIdentifier() {
-        return "[OAuth2 Account Username]";
+        return "[OAuth2AccountUsername]";
     }
 
     @Override
