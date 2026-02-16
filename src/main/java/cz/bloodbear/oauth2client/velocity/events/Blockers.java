@@ -14,8 +14,7 @@ public class Blockers {
     @Subscribe(order = PostOrder.FIRST)
     public void onCommand(CommandExecuteEvent event) {
         if (!(event.getCommandSource() instanceof Player player)) return;
-        if (OAuth2Client.getInstance().getAuthManager().isAuthenticated(player.getUniqueId()))
-            return;
+        if (OAuth2Client.getInstance().getAuthManager().isAuthenticated(player.getUniqueId())) return;
 
         var command = event.getCommand().split(" ")[0];
 
@@ -27,17 +26,15 @@ public class Blockers {
     @Subscribe(order = PostOrder.FIRST)
     public void onServerConnect(ServerPreConnectEvent event) {
 
-        if (OAuth2Client.getInstance().getAuthManager().isAuthenticated(event.getPlayer().getUniqueId()))
-            return;
+        if (OAuth2Client.getInstance().getAuthManager().isAuthenticated(event.getPlayer().getUniqueId())) return;
 
         Set<String> allowed = Set.of("limbo", "limbo1", "limbo2"); // servers allowed before linking
 
         if (!allowed.contains(event.getOriginalServer().getServerInfo().getName())) {
             event.getPlayer().sendMessage(OAuth2Client.getInstance().formatMessage("<red>Your account is not linked. Please link your account with /myecl login to join the server.</red>"));
             event.setResult(ServerPreConnectEvent.ServerResult.denied());
-            if (event.getPlayer().getCurrentServer().isEmpty()) {
+            if (event.getPlayer().getCurrentServer().isEmpty()) 
                 event.getPlayer().disconnect(OAuth2Client.getInstance().formatMessage("<red>Limbo server is down</red>"));
-            }
         }
     }
 

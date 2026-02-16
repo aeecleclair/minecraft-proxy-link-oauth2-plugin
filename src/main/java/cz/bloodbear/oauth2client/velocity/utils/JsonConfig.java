@@ -30,9 +30,7 @@ public class JsonConfig {
             try (InputStream inputStream = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(filename))) {
                 Files.createDirectories(configPath.getParent());
                 Files.copy(inputStream, configPath, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            } catch (IOException e) { e.printStackTrace(); }
         }
     }
 
@@ -52,10 +50,7 @@ public class JsonConfig {
             Path backupDir = configPath.getParent().resolve("_backup");
             Files.createDirectories(backupDir);
 
-            String timestamp = java.time.LocalDateTime.now()
-                    .toString()
-                    .replace(":", "-")
-                    .replace(".", "-");
+            String timestamp = java.time.LocalDateTime.now().toString().replace(":", "-").replace(".", "-");
 
             String backupFileName = configPath.getFileName().toString().replace(".json", "") + "_" + timestamp + ".json";
             Path backupFile = backupDir.resolve(backupFileName);
@@ -63,16 +58,14 @@ public class JsonConfig {
             Files.copy(configPath, backupFile, StandardCopyOption.REPLACE_EXISTING);
             System.out.println("Config backup created: " + backupFile.toAbsolutePath());
 
-        } catch (IOException e) {
-            OAuth2Client.getLogger().error("An error occurred while creating config backup: " + e.getMessage());
-        }
+        } catch (IOException e) { OAuth2Client.getLogger().error("An error occurred while creating config backup: " + e.getMessage()); }
     }
 
 
     private boolean mergeJsonObjectsRecursive(JsonObject target, JsonObject source) {
         boolean changed = false;
 
-        for (String key : source.keySet()) {
+        for (String key: source.keySet()) {
             JsonElement sourceElement = source.get(key);
 
             if (sourceElement.isJsonObject()) {
@@ -85,9 +78,8 @@ public class JsonConfig {
                     changed = true;
                 }
 
-                if (mergeJsonObjectsRecursive(targetChild, sourceElement.getAsJsonObject())) {
+                if (mergeJsonObjectsRecursive(targetChild, sourceElement.getAsJsonObject()))
                     changed = true;
-                }
 
             } else {
                 if (!target.has(key)) {
@@ -106,31 +98,24 @@ public class JsonConfig {
                 Reader reader = new java.io.InputStreamReader(inputStream);
                 return JsonParser.parseReader(reader).getAsJsonObject();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
         return new JsonObject();
     }
 
     public void load() {
-        if (!Files.exists(configPath)) {
+        if (!Files.exists(configPath))
             createDefaultConfig(configPath.getFileName().toString());
-        }
 
         try (Reader reader = Files.newBufferedReader(configPath)) {
             jsonData = JsonParser.parseReader(reader).getAsJsonObject();
             mergeMessagesFromDefaults(filename);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     public void save() {
         try (Writer writer = Files.newBufferedWriter(configPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             GSON.toJson(jsonData, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     private JsonObject getSection(String sectionPath) {

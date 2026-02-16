@@ -29,12 +29,15 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 
-@Plugin(id = "oauth2client", name = "OAuth2Client", version = "25.7",
-        authors = {"Mtn16", "warix8"}, url = "https://github.com/aeecleclair/minecraft-proxy-link-oauth2-plugin",
-        description = "A Velocity plugin for OAuth2 integration.",
-        dependencies = {
-            @Dependency(id = "plan", optional = true)
-        })
+@Plugin(
+    id = "oauth2client", 
+    name = "OAuth2Client", 
+    version = "25.7",
+    authors = { "Mtn16", "warix8" }, 
+    url = "https://github.com/aeecleclair/minecraft-proxy-link-oauth2-plugin",
+    description = "A Velocity plugin for OAuth2 integration.",
+    dependencies = { @Dependency(id = "plan", optional = true) }
+)
 public class OAuth2Client {
     private static OAuth2Client instance;
 
@@ -63,7 +66,13 @@ public class OAuth2Client {
     private final long startTime;
 
     @Inject
-    public OAuth2Client(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory, PluginContainer container, AuthManager authManager) {
+    public OAuth2Client(
+        ProxyServer server,
+        Logger logger,
+        @DataDirectory Path dataDirectory,
+        PluginContainer container,
+        AuthManager authManager
+    ) {
         instance = this;
 
         this.server = server;
@@ -80,22 +89,22 @@ public class OAuth2Client {
         loadHTML();
 
         this.databaseManager = new DatabaseManager(
-                config.getString("database.host", ""),
-                config.getInt("database.port", 3306),
-                config.getString("database.name", ""),
-                config.getString("database.username", ""),
-                config.getString("database.password", ""),
-                config.getBoolean("database.useSSL", false)
+            config.getString("database.host", ""),
+            config.getInt("database.port", 3306),
+            config.getString("database.name", ""),
+            config.getString("database.username", ""),
+            config.getString("database.password", ""),
+            config.getBoolean("database.useSSL", false)
         );
 
         this.webServer = new WebServer(
-                config.getInt("webserver.port", 80),
-                config.getBoolean("webserver.domain.use", false),
-                config.getString("webserver.domain.domain", "")
+            config.getInt("webserver.port", 80),
+            config.getBoolean("webserver.domain.use", false),
+            config.getString("webserver.domain.domain", "")
         );
 
-        if(config.getBoolean("webserver.domain.use", false)) {
-            if(config.getBoolean("webserver.domain.https", false)) {
+        if (config.getBoolean("webserver.domain.use", false)) {
+            if (config.getBoolean("webserver.domain.https", false)) {
                 redirect = "https://" + config.getString("webserver.domain.domain", "") + "/callback";
             } else {
                 redirect = "http://" + config.getString("webserver.domain.domain", "") + "/callback";
@@ -104,10 +113,10 @@ public class OAuth2Client {
             redirect = "http://" + config.getString("webserver.ip", "") + ":" + config.getString("webserver.port", "")  + "/callback";
         }
         this.oAuth2Handler = new OAuth2Handler(
-                config.getString("oauth2.url", ""),
-                config.getString("oauth2.client.id", ""),
-                config.getString("oauth2.client.secret", ""),
-                redirect
+            config.getString("oauth2.url", ""),
+            config.getString("oauth2.client.id", ""),
+            config.getString("oauth2.client.secret", ""),
+            redirect
         );
         this.authManager = authManager;
 
@@ -131,9 +140,7 @@ public class OAuth2Client {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
-        try {
-            webServer.start();
-        } catch (IOException e) {
+        try { webServer.start(); } catch (IOException e) {
             logger.error(e.getMessage());
             server.shutdown();
         }
@@ -141,9 +148,7 @@ public class OAuth2Client {
         server.getEventManager().register(this, new PlayerConnection());
         server.getEventManager().register(this, new Blockers());
         CommandManager commandManager = server.getCommandManager();
-        CommandMeta OAuth2CommandMeta = commandManager.metaBuilder("myecl")
-                .plugin(container)
-                .build();
+        CommandMeta OAuth2CommandMeta = commandManager.metaBuilder("myecl").plugin(container).build();
 
         commandManager.register(OAuth2CommandMeta, new OAuth2Command());
 
@@ -163,7 +168,10 @@ public class OAuth2Client {
     }
 
     public @NotNull String getMessage(String key, Player player) {
-        return PlaceholderRegistry.replacePlaceholders(messages.getString(key, "<red>Unknown message: " + key + "</red>"), player);
+        return PlaceholderRegistry.replacePlaceholders(
+            messages.getString(key, "<red>Unknown message: " + key + "</red>"),
+            player
+        );
     }
 
     public HtmlPage getHtmlPage(String name) {
@@ -193,9 +201,7 @@ public class OAuth2Client {
 
     public ProxyServer getServer() { return server; }
 
-    public Component formatMessage(String input) {
-        return miniMessage.deserialize(input);
-    }
+    public Component formatMessage(String input) { return miniMessage.deserialize(input); }
 
     public String getClientId() { return config.getString("oauth2.client.id", ""); }
     public String getRedirectUri() { return redirect; }

@@ -25,22 +25,17 @@ public class HtmlPage {
             try (InputStream inputStream = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(filename))) {
                 Files.createDirectories(pagePath.getParent());
                 Files.copy(inputStream, pagePath, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            } catch (IOException e) { e.printStackTrace(); }
         }
     }
 
     public void load() {
-        if (!Files.exists(pagePath)) {
+        if (!Files.exists(pagePath))
             createDefaultPage(pagePath.getFileName().toString());
-        }
 
         try {
             content = Files.readString(pagePath, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            OAuth2Client.getLogger().error(e.getMessage());
-        }
+        } catch (IOException e) { OAuth2Client.getLogger().error(e.getMessage()); }
     }
 
     public String getContent() { return content; }

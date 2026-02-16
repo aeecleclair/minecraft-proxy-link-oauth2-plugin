@@ -15,27 +15,11 @@ public class ConsoleColor {
         this.logger = logger;
     }
 
-    public static String text(String text, String color) {
-        return color + text + RESET;
-    }
+    public static String text(String text, String color) { return color + text + RESET; }
 
-    public void error(String text) {
-        logger.error(text(text, RED));
-    }
-
-    public void info(String text) {
-        logger.info(text(text, GREEN));
-    }
-
-    public void warn(String text) {
-        logger.warn(text(text, YELLOW));
-    }
-
-    public void debug(String text) {
-        logger.debug(text(text, MAGENTA));
-    }
-
-    public void trace(String text) {
-        logger.trace(text(text, CYAN));
-    }
+    public void error(String text) { logger.error(text(text, RED)); }
+    public void info(String text) { logger.info(text(text, GREEN)); }
+    public void warn(String text) { logger.warn(text(text, YELLOW)); }
+    public void debug(String text) { logger.debug(text(text, MAGENTA)); }
+    public void trace(String text) { logger.trace(text(text, CYAN)); }
 }

@@ -27,13 +27,16 @@ public class OAuth2Handler {
 
     private String getAccessToken(String code) throws IOException {
         RequestBody formBody = (new FormBody.Builder())
-                .add("client_id", CLIENT_ID)
-                .add("client_secret", CLIENT_SECRET)
-                .add("grant_type", "authorization_code")
-                .add("code", code)
-                .add("redirect_uri", REDIRECT_URI)
-                .build();
-        Request request = (new Request.Builder()).url(AUTH_URL+"/auth/token").post(formBody).build();
+            .add("client_id", CLIENT_ID)
+            .add("client_secret", CLIENT_SECRET)
+            .add("grant_type", "authorization_code")
+            .add("code", code)
+            .add("redirect_uri", REDIRECT_URI)
+            .build();
+        Request request = (new Request.Builder())
+            .url(AUTH_URL + "/auth/token")
+            .post(formBody)
+            .build();
 
         try (Response response = this.httpClient.newCall(request).execute()) {
             if (response.isSuccessful()) {
@@ -52,18 +55,16 @@ public class OAuth2Handler {
 
             OAuth2Account accountDetails = getAccountDetails(accessToken);
             return new OAuth2Account(accountDetails.id(), accountDetails.username());
-        } catch (IOException e) {
-            OAuth2Client.getLogger().error(e.getMessage());
-        }
+        } catch (IOException e) { OAuth2Client.getLogger().error(e.getMessage()); }
         return null;
     }
 
     private OAuth2Account getAccountDetails(String accessToken) {
         try {
             Request request = (new Request.Builder())
-                    .url(AUTH_URL+"/auth/userinfo")
-                    .header("Authorization", "Bearer " + accessToken)
-                    .build();
+                .url(AUTH_URL+"/auth/userinfo")
+                .header("Authorization", "Bearer " + accessToken)
+                .build();
 
             try (Response response = this.httpClient.newCall(request).execute()) {
                 if (response.isSuccessful()) {
@@ -75,9 +76,7 @@ public class OAuth2Handler {
                     return new OAuth2Account(userId, nickname);
                 }
             }
-        } catch (IOException e) {
-            OAuth2Client.getLogger().error(e.getMessage());
-        }
+        } catch (IOException e) { OAuth2Client.getLogger().error(e.getMessage()); }
         return null;
     }
 }
