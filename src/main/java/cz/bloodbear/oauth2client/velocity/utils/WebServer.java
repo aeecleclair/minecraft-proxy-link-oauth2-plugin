@@ -41,18 +41,18 @@ public class WebServer {
         server.createContext("/callback", new OAuthCallbackHandler());
         server.setExecutor(executor);
         server.start();
-        OAuth2Client.getLogger().info("Webserver is running on port " + port);
+        OAuth2Client.logger().info("Webserver is running on port " + port);
         if (useDomain) {
-            OAuth2Client.getLogger().info("using custom domain " + domain);
+            OAuth2Client.logger().info("using custom domain " + domain);
         } else {
-            OAuth2Client.getLogger().warn("Webserver is not using domain!");
+            OAuth2Client.logger().warn("Webserver is not using domain!");
         }
     }
 
     public void stop() {
         if (server != null) {
             server.stop(0);
-            OAuth2Client.getLogger().info("Webserver disabled.");
+            OAuth2Client.logger().info("Webserver disabled.");
         }
     }
 
@@ -78,24 +78,24 @@ public class WebServer {
                 String code = getQueryParam(query, "code");
 
                 if (state == null) {
-                    sendHtmlResponse(exchange, 400, OAuth2Client.getInstance().getHtmlPage("stateMissing").getContent());
+                    sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("stateMissing").getContent());
                     return;
                 }
 
                 if (code == null) {
-                    sendHtmlResponse(exchange, 400, OAuth2Client.getInstance().getHtmlPage("codeMissing").getContent());
+                    sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("codeMissing").getContent());
                     return;
                 }
 
-                String minecraftUUID = OAuth2Client.getInstance().getDatabaseManager().getPlayerByCode(state);
+                String minecraftUUID = OAuth2Client.getDatabaseManager().getPlayerByCode(state);
                 if (minecraftUUID == null) {
-                    sendHtmlResponse(exchange, 400, OAuth2Client.getInstance().getHtmlPage("invalid").getContent());
+                    sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("invalid").getContent());
                     return;
                 }
 
-                OAuth2Account OAuth2Account = OAuth2Client.getInstance().getOAuth2Handler().getOAuth2Account(code);
+                OAuth2Account OAuth2Account = OAuth2Client.OAuth2Handler().getOAuth2Account(code);
                 if (OAuth2Account == null) {
-                    sendHtmlResponse(exchange, 400, OAuth2Client.getInstance().getHtmlPage("failed").getContent());
+                    sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("failed").getContent());
                     return;
                 }
 
@@ -103,35 +103,35 @@ public class WebServer {
                 // We would like to check if the OAuth2 provider account is already linked,
                 // and if the current Minecraft UUID corresponds to this account.
 
-                if (OAuth2Client.getInstance().getDatabaseManager().isLinked(minecraftUUID)) {
+                if (OAuth2Client.getDatabaseManager().isLinked(minecraftUUID)) {
 
                     // If the UUID is already linked, we need to check if it's linked to the same account on the OAuth2 provider
-                    OAuth2Account existingAccount = OAuth2Client.getInstance().getDatabaseManager().getOAuth2Account(minecraftUUID);
+                    OAuth2Account existingAccount = OAuth2Client.getDatabaseManager().getOAuth2Account(minecraftUUID);
                     if (!existingAccount.id().equals(OAuth2Account.id())) {
-                        sendHtmlResponse(exchange, 400, OAuth2Client.getInstance().getHtmlPage("alreadylinked").getContent());
+                        sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("alreadyLinked").getContent());
                         return;
                     }
                 } else {
                     // If the UUID is not linked, we need to check if the OAuth2 provider account is already linked to another UUID
-                    if (OAuth2Client.getInstance().getDatabaseManager().isOAuth2AccountLinked(OAuth2Account.id())) {
-                        sendHtmlResponse(exchange, 400, OAuth2Client.getInstance().getHtmlPage("alreadylinked").getContent());
+                    if (OAuth2Client.getDatabaseManager().isOAuth2AccountLinked(OAuth2Account.id())) {
+                        sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("alreadyLinked").getContent());
                         return;
                     }
                     // Then we can proceed to link the account
-                    OAuth2Client.getInstance().getDatabaseManager().linkAccount(minecraftUUID, OAuth2Account.id(), OAuth2Account.username());
+                    OAuth2Client.getDatabaseManager().linkAccount(minecraftUUID, OAuth2Account.id(), OAuth2Account.username());
                 }
 
-                OAuth2Client.getInstance().getAuthManager().authenticate(UUID.fromString(minecraftUUID));
-                sendHtmlResponse(exchange, 200, OAuth2Client.getInstance().getHtmlPage("linked").getContent());
+                OAuth2Client.AuthManager().authenticate(UUID.fromString(minecraftUUID));
+                sendHtmlResponse(exchange, 200, OAuth2Client.getHtmlPage("linked").getContent());
 
-                Optional<Player> player = OAuth2Client.getInstance().getServer().getPlayer(UUID.fromString(minecraftUUID));
+                Optional<Player> player = OAuth2Client.getServer().getPlayer(UUID.fromString(minecraftUUID));
                 player.ifPresent(p -> {
-                    p.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.oauth2.linked", p)));
+                    p.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.oauth2.linked", p)));
                     // Move the player to the lobby/host server after linking
-                    p.createConnectionRequest(OAuth2Client.getInstance().getServer().getServer("lobby").orElse(null)).fireAndForget();
+                    p.createConnectionRequest(OAuth2Client.getServer().getServer("lobby").orElse(null)).fireAndForget();
                 });
 
-            } catch (Exception e) { OAuth2Client.getLogger().error(e.getMessage()); }
+            } catch (Exception e) { OAuth2Client.logger().error(e.getMessage()); }
         }
     }
 

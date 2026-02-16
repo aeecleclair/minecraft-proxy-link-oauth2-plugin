@@ -55,7 +55,7 @@ public class OAuth2Handler {
 
             OAuth2Account accountDetails = getAccountDetails(accessToken);
             return new OAuth2Account(accountDetails.id(), accountDetails.username());
-        } catch (IOException e) { OAuth2Client.getLogger().error(e.getMessage()); }
+        } catch (IOException e) { OAuth2Client.logger().error(e.getMessage()); }
         return null;
     }
 
@@ -67,7 +67,7 @@ public class OAuth2Handler {
                 .build();
 
             try (Response response = this.httpClient.newCall(request).execute()) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && response.body() != null) {
                     String responseBody = response.body().string();
                     String userId = responseBody.substring(responseBody.indexOf("\"id\":\"") + 6);
                     userId = userId.substring(0, userId.indexOf("\""));
@@ -76,7 +76,7 @@ public class OAuth2Handler {
                     return new OAuth2Account(userId, nickname);
                 }
             }
-        } catch (IOException e) { OAuth2Client.getLogger().error(e.getMessage()); }
+        } catch (IOException e) { OAuth2Client.logger().error(e.getMessage()); }
         return null;
     }
 }

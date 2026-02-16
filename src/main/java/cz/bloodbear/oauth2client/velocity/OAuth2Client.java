@@ -43,24 +43,23 @@ public class OAuth2Client {
 
     public final ConsoleColor logger;
     private final ProxyServer server;
-    private final Path dataDirectory;
     private final PluginContainer container;
 
     private final JsonConfig config;
     private final JsonConfig messages;
     private final MiniMessage miniMessage;
 
-    private HtmlPage linkedPage;
-    private HtmlPage failedPage;
-    private HtmlPage missingCodePage;
-    private HtmlPage missingStatePage;
-    private HtmlPage invalidPage;
-    private HtmlPage alreadyLinkedPage;
+    private final HtmlPage linkedPage;
+    private final HtmlPage failedPage;
+    private final HtmlPage missingCodePage;
+    private final HtmlPage missingStatePage;
+    private final HtmlPage invalidPage;
+    private final HtmlPage alreadyLinkedPage;
     private final String redirect;
 
     private final DatabaseManager databaseManager;
     private final WebServer webServer;
-    private final OAuth2Handler oAuth2Handler;
+    private final OAuth2Handler OAuth2Handler;
     private final AuthManager authManager;
 
     private final long startTime;
@@ -77,18 +76,23 @@ public class OAuth2Client {
 
         this.server = server;
         this.logger = new ConsoleColor(logger);
-        this.dataDirectory = dataDirectory;
         this.container = container;
+        this.authManager = authManager;
 
-        this.config = new JsonConfig(dataDirectory, "config.json");
-        this.messages = new JsonConfig(dataDirectory, "messages.json");
-        this.miniMessage = MiniMessage.miniMessage();
+        config = new JsonConfig(dataDirectory, "config.json");
+        messages = new JsonConfig(dataDirectory, "messages.json");
+        miniMessage = MiniMessage.miniMessage();
 
         startTime = System.currentTimeMillis();
+        linkedPage = new HtmlPage(dataDirectory, "linked.html");
+        failedPage = new HtmlPage(dataDirectory, "failed.html");
+        missingCodePage = new HtmlPage(dataDirectory, "missingCode.html");
+        missingStatePage = new HtmlPage(dataDirectory, "missingState.html");
+        invalidPage = new HtmlPage(dataDirectory, "invalid.html");
+        alreadyLinkedPage = new HtmlPage(dataDirectory, "alreadyLinked.html");
 
-        loadHTML();
 
-        this.databaseManager = new DatabaseManager(
+        databaseManager = new DatabaseManager(
             config.getString("database.host", ""),
             config.getInt("database.port", 3306),
             config.getString("database.name", ""),
@@ -97,7 +101,7 @@ public class OAuth2Client {
             config.getBoolean("database.useSSL", false)
         );
 
-        this.webServer = new WebServer(
+        webServer = new WebServer(
             config.getInt("webserver.port", 80),
             config.getBoolean("webserver.domain.use", false),
             config.getString("webserver.domain.domain", "")
@@ -112,30 +116,16 @@ public class OAuth2Client {
         } else {
             redirect = "http://" + config.getString("webserver.ip", "") + ":" + config.getString("webserver.port", "")  + "/callback";
         }
-        this.oAuth2Handler = new OAuth2Handler(
+        this.OAuth2Handler = new OAuth2Handler(
             config.getString("oauth2.url", ""),
             config.getString("oauth2.client.id", ""),
             config.getString("oauth2.client.secret", ""),
             redirect
         );
-        this.authManager = authManager;
 
-        loadPlaceholders();
-    }
-
-    private void loadPlaceholders() {
         PlaceholderRegistry.registerPlaceholder(new PlayerNamePlaceholder());
         PlaceholderRegistry.registerPlaceholder(new OAuth2IdPlaceholder());
         PlaceholderRegistry.registerPlaceholder(new OAuth2AccountUsernamePlaceholder());
-    }
-
-    private void loadHTML() {
-        this.linkedPage = new HtmlPage(dataDirectory, "linked.html");
-        this.failedPage = new HtmlPage(dataDirectory, "failed.html");
-        this.missingCodePage = new HtmlPage(dataDirectory, "missingCode.html");
-        this.missingStatePage = new HtmlPage(dataDirectory, "missingState.html");
-        this.invalidPage = new HtmlPage(dataDirectory, "invalid.html");
-        this.alreadyLinkedPage = new HtmlPage(dataDirectory, "alreadylinked.html");
     }
 
     @Subscribe
@@ -161,54 +151,52 @@ public class OAuth2Client {
         webServer.stop();
     }
 
-    public static OAuth2Client getInstance() { return instance; }
-
-    public @NotNull String getMessage(String key) {
-        return messages.getString(key, "<red>Unknown message: " + key + "</red>");
+    public static @NotNull String getMessage(String key) {
+        return instance.messages.getString(key, "<red>Unknown message: " + key + "</red>");
     }
 
-    public @NotNull String getMessage(String key, Player player) {
+    public static @NotNull String getMessage(String key, Player player) {
         return PlaceholderRegistry.replacePlaceholders(
-            messages.getString(key, "<red>Unknown message: " + key + "</red>"),
+            instance.messages.getString(key, "<red>Unknown message: " + key + "</red>"),
             player
         );
     }
 
-    public HtmlPage getHtmlPage(String name) {
+    public static HtmlPage getHtmlPage(String name) {
         if (name.equalsIgnoreCase("linked")) {
-            return linkedPage;
+            return instance.linkedPage;
         } else if (name.equalsIgnoreCase("stateMissing")) {
-            return missingStatePage;
+            return instance.missingStatePage;
         } else if (name.equalsIgnoreCase("codeMissing")) {
-            return missingCodePage;
+            return instance.missingCodePage;
         } else if (name.equalsIgnoreCase("invalid")) {
-            return invalidPage;
+            return instance.invalidPage;
         } else if (name.equalsIgnoreCase("failed")) {
-            return failedPage;
-        } else if (name.equalsIgnoreCase("alreadylinked")) {
-            return alreadyLinkedPage;
+            return instance.failedPage;
+        } else if (name.equalsIgnoreCase("alreadyLinked")) {
+            return instance.alreadyLinkedPage;
         }
         return null;
     }
 
-    public DatabaseManager getDatabaseManager() { return databaseManager; }
+    public static DatabaseManager getDatabaseManager() { return instance.databaseManager; }
 
-    public OAuth2Handler getOAuth2Handler() { return oAuth2Handler; }
+    public static OAuth2Handler OAuth2Handler() { return instance.OAuth2Handler; }
 
-    public AuthManager getAuthManager() { return authManager; }
+    public static AuthManager AuthManager() { return instance.authManager; }
 
-    public static ConsoleColor getLogger() { return getInstance().logger; }
+    public static ConsoleColor logger() { return instance.logger; }
 
-    public ProxyServer getServer() { return server; }
+    public static ProxyServer getServer() { return instance.server; }
 
-    public Component formatMessage(String input) { return miniMessage.deserialize(input); }
+    public static Component formatMessage(String input) { return instance.miniMessage.deserialize(input); }
 
-    public String getClientId() { return config.getString("oauth2.client.id", ""); }
-    public String getRedirectUri() { return redirect; }
-    public String getAuthUrl() { return config.getString("oauth2.url", ""); }
+    public static String getClientId() { return instance.config.getString("oauth2.client.id", ""); }
+    public static String getRedirectUri() { return instance.redirect; }
+    public static String getAuthUrl() { return instance.config.getString("oauth2.url", ""); }
 
     // TODO: use that in /myecl info
-    public Duration getUptime() { return Duration.ofMillis(System.currentTimeMillis() - startTime); }
+    public static Duration getUptime() { return Duration.ofMillis(System.currentTimeMillis() - instance.startTime); }
 
     // TODO: use that in /myecl info
     static String formatDuration(Duration duration) {

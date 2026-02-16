@@ -58,7 +58,7 @@ public class JsonConfig {
             Files.copy(configPath, backupFile, StandardCopyOption.REPLACE_EXISTING);
             System.out.println("Config backup created: " + backupFile.toAbsolutePath());
 
-        } catch (IOException e) { OAuth2Client.getLogger().error("An error occurred while creating config backup: " + e.getMessage()); }
+        } catch (IOException e) { OAuth2Client.logger().error("An error occurred while creating config backup: " + e.getMessage()); }
     }
 
 

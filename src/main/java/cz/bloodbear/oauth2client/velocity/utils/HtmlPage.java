@@ -35,7 +35,7 @@ public class HtmlPage {
 
         try {
             content = Files.readString(pagePath, StandardCharsets.UTF_8);
-        } catch (IOException e) { OAuth2Client.getLogger().error(e.getMessage()); }
+        } catch (IOException e) { OAuth2Client.logger().error(e.getMessage()); }
     }
 
     public String getContent() { return content; }
