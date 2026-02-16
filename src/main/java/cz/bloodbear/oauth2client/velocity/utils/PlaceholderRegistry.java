@@ -14,9 +14,8 @@ public class PlaceholderRegistry {
     }
 
     public static String replacePlaceholders(String text, Player player) {
-        for (Placeholder placeholder : placeholders.values()) {
+        for (Placeholder placeholder : placeholders.values())
             text = placeholder.replace(text, player);
-        }
         return text;
     }
 }

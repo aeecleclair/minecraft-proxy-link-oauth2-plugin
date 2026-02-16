@@ -11,9 +11,8 @@ public class PlayerNamePlaceholder implements Placeholder {
 
     @Override
     public String replace(String input, Player player) {
-        if (player != null) {
+        if (player != null)
             return input.replace(getIdentifier(), player.getUsername());
-        }
         return input;
     }
 }
