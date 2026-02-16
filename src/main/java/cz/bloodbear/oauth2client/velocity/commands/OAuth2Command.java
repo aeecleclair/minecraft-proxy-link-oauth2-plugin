@@ -154,7 +154,7 @@ public class OAuth2Command implements SimpleCommand {
         if (!(invocation.source() instanceof Player)) return new ArrayList<>();
 
         if (invocation.arguments().length <= 1) {
-            List<String> choices = Arrays.asList("link", "unlink", "info");
+            List<String> choices = Arrays.asList("login", "unlink", "info");
             List<String> finalChoices = new ArrayList<>();
             choices.forEach(choice -> {
                 if (hasPermission(invocation.source(), choice))

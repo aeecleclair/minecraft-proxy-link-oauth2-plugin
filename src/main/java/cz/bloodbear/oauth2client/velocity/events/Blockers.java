@@ -1,6 +1,5 @@
 package cz.bloodbear.oauth2client.velocity.events;
 
-import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
@@ -11,7 +10,7 @@ import java.util.Set;
 
 public class Blockers {
 
-    @Subscribe(order = PostOrder.FIRST)
+    @Subscribe(priority = Short.MAX_VALUE)
     public void onCommand(CommandExecuteEvent event) {
         if (!(event.getCommandSource() instanceof Player player)) return;
         if (OAuth2Client.getInstance().getAuthManager().isAuthenticated(player.getUniqueId())) return;
@@ -23,7 +22,7 @@ public class Blockers {
         event.setResult(CommandExecuteEvent.CommandResult.denied());
     }
 
-    @Subscribe(order = PostOrder.FIRST)
+    @Subscribe(priority = Short.MAX_VALUE)
     public void onServerConnect(ServerPreConnectEvent event) {
 
         if (OAuth2Client.getInstance().getAuthManager().isAuthenticated(event.getPlayer().getUniqueId())) return;
