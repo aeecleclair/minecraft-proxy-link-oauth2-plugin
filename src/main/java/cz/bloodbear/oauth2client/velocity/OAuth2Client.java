@@ -38,7 +38,6 @@ import java.time.Duration;
 public class OAuth2Client {
     private static OAuth2Client instance;
 
-    @Inject
     public final ConsoleColor logger;
     private final ProxyServer server;
     private final Path dataDirectory;
@@ -61,7 +60,7 @@ public class OAuth2Client {
     private final OAuth2Handler oAuth2Handler;
     private final AuthManager authManager;
 
-    private long startTime;
+    private final long startTime;
 
     @Inject
     public OAuth2Client(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory, PluginContainer container, AuthManager authManager) {
@@ -201,13 +200,6 @@ public class OAuth2Client {
     public String getClientId() { return config.getString("oauth2.client.id", ""); }
     public String getRedirectUri() { return redirect; }
     public String getAuthUrl() { return config.getString("oauth2.url", ""); }
-
-    // TODO: use that
-    public void reloadConfig() {
-        config.load();
-        messages.load();
-        loadHTML();
-    }
 
     // TODO: use that in /myecl info
     public Duration getUptime() { return Duration.ofMillis(System.currentTimeMillis() - startTime); }
