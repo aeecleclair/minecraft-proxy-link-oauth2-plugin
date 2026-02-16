@@ -9,6 +9,7 @@
     "oauth2": {
       "invite": "<blue>Join your OAuth2 provider <underlined><click:open_url:'https://example.org'>here</click></underlined></blue>",
       "alreadylinked": "<red>Your account is already linked.</red>",
+      "linked": "<green>Your account was linked successfully. ([OAuth2Username])</green>",
       "notlinked": "<red>Your account is not linked.</red>",
       "unlinked": "<green>Your account was unlinked successfully.</green>",
       "info": "<blue>Your account is linked to OAuth2 provider account [OAuth2Username] ([OAuth2Id])</blue>",

@@ -88,8 +88,8 @@ public class WebServer {
                     return;
                 }
 
-                String uuid = OAuth2Client.getInstance().getDatabaseManager().getPlayerByCode(state);
-                if(uuid == null) {
+                String minecraftUUID = OAuth2Client.getInstance().getDatabaseManager().getPlayerByCode(state);
+                if(minecraftUUID == null) {
                     sendHtmlResponse(exchange, 400, OAuth2Client.getInstance().getHtmlPage("invalid").getContent());
                     return;
                 }
@@ -104,10 +104,10 @@ public class WebServer {
                 // We would like to check if the OAuth2 provider account is already linked,
                 // and if the current Minecraft UUID corresponds to this account.
 
-                if(OAuth2Client.getInstance().getDatabaseManager().isLinked(uuid)) {
+                if(OAuth2Client.getInstance().getDatabaseManager().isLinked(minecraftUUID)) {
 
                     // If the UUID is already linked, we need to check if it's linked to the same account on the OAuth2 provider
-                    OAuth2Account existingAccount = OAuth2Client.getInstance().getDatabaseManager().getOAuth2Account(uuid);
+                    OAuth2Account existingAccount = OAuth2Client.getInstance().getDatabaseManager().getOAuth2Account(minecraftUUID);
                     if(!existingAccount.id().equals(OAuth2Account.id())) {
                         sendHtmlResponse(exchange, 400, OAuth2Client.getInstance().getHtmlPage("alreadylinked").getContent());
                         return;
@@ -119,13 +119,14 @@ public class WebServer {
                         return;
                     }
                     // Then we can proceed to link the account
-                    OAuth2Client.getInstance().getDatabaseManager().linkAccount(uuid, OAuth2Account.id(), OAuth2Account.username());
+                    OAuth2Client.getInstance().getDatabaseManager().linkAccount(minecraftUUID, OAuth2Account.id(), OAuth2Account.username());
                 }
-
-                OAuth2Client.getInstance().getAuthManager().authenticate(UUID.fromString(uuid));
+                
+                OAuth2Client.getInstance().getAuthManager().authenticate(UUID.fromString(minecraftUUID));
                 sendHtmlResponse(exchange, 200, OAuth2Client.getInstance().getHtmlPage("linked").getContent());
-
-                Optional<Player> player = OAuth2Client.getInstance().getServer().getPlayer(UUID.fromString(uuid));
+                
+                Optional<Player> player = OAuth2Client.getInstance().getServer().getPlayer(UUID.fromString(minecraftUUID));
+                player.ifPresent(value -> value.sendMessage(OAuth2Client.getInstance().formatMessage(OAuth2Client.getInstance().getMessage("command.oauth2.linked", value))));
                 // Move the player to the lobby/host server after linking
                 player.ifPresent(p -> p.createConnectionRequest(OAuth2Client.getInstance().getServer().getServer("lobby").orElse(null)).fireAndForget());
 

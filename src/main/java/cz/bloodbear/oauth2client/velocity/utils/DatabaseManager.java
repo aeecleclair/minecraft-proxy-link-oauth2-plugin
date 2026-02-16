@@ -70,8 +70,6 @@ public class DatabaseManager {
         } catch (SQLException e) {
             OAuth2Client.getLogger().error(e.getMessage());
         }
-
-        Optional<Player> player = OAuth2Client.getInstance().getServer().getPlayer(UUID.fromString(minecraftUUID));
     }
 
     public OAuth2Account getOAuth2Account(String minecraftUUID) {
