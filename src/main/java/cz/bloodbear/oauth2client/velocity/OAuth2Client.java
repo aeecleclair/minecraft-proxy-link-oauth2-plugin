@@ -36,7 +36,10 @@ import java.time.Duration;
     authors = { "Mtn16", "warix8" }, 
     url = "https://github.com/aeecleclair/minecraft-proxy-link-oauth2-plugin",
     description = "A Velocity plugin for OAuth2 integration.",
-    dependencies = { @Dependency(id = "plan", optional = true) }
+    dependencies = {
+        @Dependency(id = "luckperms", optional = false),
+        @Dependency(id = "plan", optional = true)
+    }
 )
 public class OAuth2Client {
     private static OAuth2Client instance;
