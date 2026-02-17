@@ -15,6 +15,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.node.Node;
 
 public class WebServer {
     private HttpServer server;
@@ -119,6 +122,12 @@ public class WebServer {
                     }
                     // Then we can proceed to link the account
                     OAuth2Client.getDatabaseManager().linkAccount(minecraftUUID, OAuth2Account.id(), OAuth2Account.username());
+                    // And register the nickname as a LuckPerms suffix
+                    User user = LuckPermsProvider.get().getUserManager()
+                        .loadUser(UUID.fromString(minecraftUUID)).get();
+                    user.data().add(Node.builder("suffix.1." + OAuth2Account.username()).build());
+                    LuckPermsProvider.get().getUserManager()
+                        .saveUser(user);
                 }
 
                 OAuth2Client.AuthManager().authenticate(UUID.fromString(minecraftUUID));
