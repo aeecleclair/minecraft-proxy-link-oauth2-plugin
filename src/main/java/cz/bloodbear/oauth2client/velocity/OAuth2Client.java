@@ -88,12 +88,13 @@ public class OAuth2Client {
         authManager = new AuthManager();
 
         startTime = System.currentTimeMillis();
-        linkedPage = new HtmlPage(dataDirectory, "linked.html");
-        failedPage = new HtmlPage(dataDirectory, "failed.html");
-        missingCodePage = new HtmlPage(dataDirectory, "missingCode.html");
-        missingStatePage = new HtmlPage(dataDirectory, "missingState.html");
-        invalidPage = new HtmlPage(dataDirectory, "invalid.html");
-        alreadyLinkedPage = new HtmlPage(dataDirectory, "alreadyLinked.html");
+        Path HTMLDirectory = dataDirectory.resolve("html");
+        linkedPage = new HtmlPage(HTMLDirectory, "linked.html");
+        failedPage = new HtmlPage(HTMLDirectory, "failed.html");
+        missingCodePage = new HtmlPage(HTMLDirectory, "missingCode.html");
+        missingStatePage = new HtmlPage(HTMLDirectory, "missingState.html");
+        invalidPage = new HtmlPage(HTMLDirectory, "invalid.html");
+        alreadyLinkedPage = new HtmlPage(HTMLDirectory, "alreadyLinked.html");
 
         databaseManager = new DatabaseManager(
             config.getString("database.host", ""),
