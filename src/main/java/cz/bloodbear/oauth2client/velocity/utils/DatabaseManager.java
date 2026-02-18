@@ -28,6 +28,7 @@ public class DatabaseManager {
             + "&autoReconnect=true";
         try {
             connection = DriverManager.getConnection(url, username, password);
+            OAuth2Client.logger().debug("Opened connection to db.");
             createTable();
         } catch (SQLException e) { OAuth2Client.logger().error(e.getMessage()); }
     }
@@ -186,6 +187,7 @@ public class DatabaseManager {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
             }
+            OAuth2Client.logger().debug("Closed connection to db.");
         } catch (SQLException e) { OAuth2Client.logger().error(e.getMessage()); }
     }
 }
