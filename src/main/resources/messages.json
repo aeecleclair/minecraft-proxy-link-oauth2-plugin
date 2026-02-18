@@ -7,14 +7,14 @@
       "playeronly": "<red>This command is only for players!</red>"
     },
     "oauth2": {
-      "invite": "<blue>Join your OAuth2 provider <underlined><click:open_url:'https://example.org'>here</click></underlined></blue>",
+      "usage": "Usage: myecl [OPTION]\n  login     Sign in with OAuth provider.\n            On the first time, links your OAuth provider account to your Minecraft account.\n  unlink    Unlink your Minecraft account from your OAuth provider account.\n  info      Show information about your linked OAuth2 account.",
       "alreadylinked": "<red>Your account is already linked.</red>",
-      "linked": "<green>Your account was linked successfully. ([OAuth2Username])</green>",
+      "linked": "<green>Your account was linked successfully. ([OAuth2AccountUsername])</green>",
       "notlinked": "<red>Your account is not linked.</red>",
       "unlinked": "<green>Your account was unlinked successfully.</green>",
       "notloggedin": "<red>You are not logged in.</red>",
-      "loggedout": "<green>Your logged out successfully.</green>",
-      "info": "<blue>Your account is linked to OAuth2 provider account [OAuth2Username] ([OAuth2Id])</blue>",
+      "loggedout": "<green>You logged out successfully.</green>",
+      "info": "<blue>Your account is linked to OAuth2 provider account [OAuth2AccountUsername] ([OAuth2Id])</blue>",
       "link": "<blue>Link your account <underlined><click:open_url:'[linkUrl]'>here</click></underlined></blue>",
       "noperms": "<red>You don't have permission to use this command.</red>"
     }

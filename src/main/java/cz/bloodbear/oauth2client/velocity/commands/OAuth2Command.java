@@ -74,10 +74,10 @@ public class OAuth2Command implements SimpleCommand {
             return;
         }
 
-        if (args.length == 0) {
+        if (args.length == 0 || args.length > 1) {
             source.sendMessage(
                 OAuth2Client.formatMessage(
-                    OAuth2Client.getMessage("command.oauth2.invite", (Player) invocation.source())
+                    OAuth2Client.getMessage("command.oauth2.usage", (Player) invocation.source())
                 )
             );
             return;
