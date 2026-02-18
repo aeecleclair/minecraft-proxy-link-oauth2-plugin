@@ -72,19 +72,20 @@ public class OAuth2Client {
         ProxyServer server,
         Logger logger,
         @DataDirectory Path dataDirectory,
-        PluginContainer container,
-        AuthManager authManager
+        PluginContainer container
     ) {
         instance = this;
 
         this.server = server;
         this.logger = new ConsoleColor(logger);
         this.container = container;
-        this.authManager = authManager;
+
+        this.logger.debug("Starting OAuth2 plugin...");
 
         config = new JsonConfig(dataDirectory, "config.json");
         messages = new JsonConfig(dataDirectory, "messages.json");
         miniMessage = MiniMessage.miniMessage();
+        authManager = new AuthManager();
 
         startTime = System.currentTimeMillis();
         linkedPage = new HtmlPage(dataDirectory, "linked.html");
@@ -93,7 +94,6 @@ public class OAuth2Client {
         missingStatePage = new HtmlPage(dataDirectory, "missingState.html");
         invalidPage = new HtmlPage(dataDirectory, "invalid.html");
         alreadyLinkedPage = new HtmlPage(dataDirectory, "alreadyLinked.html");
-
 
         databaseManager = new DatabaseManager(
             config.getString("database.host", ""),
@@ -129,6 +129,8 @@ public class OAuth2Client {
         PlaceholderRegistry.registerPlaceholder(new PlayerNamePlaceholder());
         PlaceholderRegistry.registerPlaceholder(new OAuth2IdPlaceholder());
         PlaceholderRegistry.registerPlaceholder(new OAuth2AccountUsernamePlaceholder());
+
+        this.logger.info("Started OAuth2 plugin successfully!");
     }
 
     @Subscribe
