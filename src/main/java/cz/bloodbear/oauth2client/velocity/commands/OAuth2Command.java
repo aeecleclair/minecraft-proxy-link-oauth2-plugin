@@ -74,7 +74,7 @@ public class OAuth2Command implements SimpleCommand {
             return;
         }
 
-        if (args.length == 0 || args.length > 1) {
+        if (args.length != 1) {
             source.sendMessage(
                 OAuth2Client.formatMessage(
                     OAuth2Client.getMessage("command.oauth2.usage", (Player) invocation.source())
