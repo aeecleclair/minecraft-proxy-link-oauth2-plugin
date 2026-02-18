@@ -98,22 +98,37 @@ public class OAuth2Command implements SimpleCommand {
         if (args[0].equalsIgnoreCase("login")) {
             if (OAuth2Client.AuthManager().isAuthenticated(player.getUniqueId())) {
                 source.sendMessage(
-                    OAuth2Client.formatMessage(
-                        OAuth2Client.getMessage("command.oauth2.alreadylinked", player)
-                    )
-                );
+                        OAuth2Client.formatMessage(
+                                OAuth2Client.getMessage("command.oauth2.alreadylinked", player)));
                 return;
             }
 
             databaseManager.deleteLinkCodes(player.getUniqueId().toString());
             String code = generateCode();
             databaseManager.saveLinkRequest(player.getUniqueId().toString(), code);
-            String url = getOAuth2Client(OAuth2Client.getAuthUrl(), OAuth2Client.getClientId(), OAuth2Client.getRedirectUri(), code, "profile");
-            player.sendMessage(OAuth2Client.formatMessage(PlaceholderRegistry.replacePlaceholders(OAuth2Client.getMessage("command.oauth2.link", player).replace("[linkUrl]", url), player)));
-            return;
+            String url = getOAuth2Client(OAuth2Client.getAuthUrl(), OAuth2Client.getClientId(),
+                    OAuth2Client.getRedirectUri(), code, "profile");
+            player.sendMessage(OAuth2Client.formatMessage(PlaceholderRegistry.replacePlaceholders(
+                    OAuth2Client.getMessage("command.oauth2.link", player).replace("[linkUrl]", url), player)));
+        }
+
+        if (args[0].equalsIgnoreCase("logout")) {
+
+            if (!OAuth2Client.AuthManager().isAuthenticated(player.getUniqueId())) {
+                player.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.oauth2.notloggedin")));
+                return;
+            }
+            OAuth2Client.AuthManager().revoke(player.getUniqueId());
+            player.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.oauth2.loggedout")));
         }
 
         if (args[0].equalsIgnoreCase("unlink")) {
+            if (!OAuth2Client.AuthManager().isAuthenticated(player.getUniqueId())) {
+                player.sendMessage(
+                        OAuth2Client.formatMessage(OAuth2Client.getMessage("command.oauth2.notloggedin")));
+                return;
+            }
+
             if (!databaseManager.isLinked(player.getUniqueId().toString())) {
                 source.sendMessage(
                     OAuth2Client.formatMessage(
@@ -129,7 +144,6 @@ public class OAuth2Command implements SimpleCommand {
                     OAuth2Client.getMessage("command.oauth2.unlinked", player)
                 )
             );
-            return;
         }
 
         if (args[0].equalsIgnoreCase("info")) {
@@ -154,7 +168,7 @@ public class OAuth2Command implements SimpleCommand {
         if (!(invocation.source() instanceof Player)) return new ArrayList<>();
 
         if (invocation.arguments().length <= 1) {
-            List<String> choices = Arrays.asList("login", "unlink", "info");
+            List<String> choices = Arrays.asList("login", "logout", "unlink", "info");
             List<String> finalChoices = new ArrayList<>();
             choices.forEach(choice -> {
                 if (hasPermission(invocation.source(), choice))
