@@ -16,9 +16,11 @@ import cz.bloodbear.oauth2client.core.utils.ConsoleColor;
 import cz.bloodbear.oauth2client.velocity.commands.OAuth2Command;
 import cz.bloodbear.oauth2client.velocity.events.Blockers;
 import cz.bloodbear.oauth2client.velocity.events.PlayerConnection;
-import cz.bloodbear.oauth2client.velocity.placeholders.OAuth2IdPlaceholder;
-import cz.bloodbear.oauth2client.velocity.placeholders.OAuth2AccountUsernamePlaceholder;
-import cz.bloodbear.oauth2client.velocity.placeholders.PlayerNamePlaceholder;
+import cz.bloodbear.oauth2client.velocity.placeholders.MinecraftUserIDPlaceholder;
+import cz.bloodbear.oauth2client.velocity.placeholders.MinecraftUsernamePlaceholder;
+import cz.bloodbear.oauth2client.velocity.placeholders.OAuth2UserIDPlaceholder;
+import cz.bloodbear.oauth2client.velocity.placeholders.OAuth2UsernamePlaceholder;
+import cz.bloodbear.oauth2client.velocity.placeholders.OAuth2ProviderNamePlaceholder;
 import cz.bloodbear.oauth2client.velocity.utils.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -132,9 +134,12 @@ public class OAuth2Client {
             config.getString("oauth2.claim", "")
         );
 
-        PlaceholderRegistry.registerPlaceholder(new PlayerNamePlaceholder());
-        PlaceholderRegistry.registerPlaceholder(new OAuth2IdPlaceholder());
-        PlaceholderRegistry.registerPlaceholder(new OAuth2AccountUsernamePlaceholder());
+        PlaceholderRegistry.registerPlaceholder(new MinecraftUserIDPlaceholder());
+        PlaceholderRegistry.registerPlaceholder(new MinecraftUsernamePlaceholder());
+        PlaceholderRegistry.registerPlaceholder(new OAuth2UserIDPlaceholder());
+        PlaceholderRegistry.registerPlaceholder(new OAuth2UsernamePlaceholder());
+        PlaceholderRegistry.registerPlaceholder(new OAuth2ProviderNamePlaceholder(
+            config.getString("oauth2.provider", "")));
 
         this.logger.info("Started OAuth2 plugin successfully!");
     }

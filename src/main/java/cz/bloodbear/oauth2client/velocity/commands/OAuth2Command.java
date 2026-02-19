@@ -5,7 +5,6 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import cz.bloodbear.oauth2client.velocity.OAuth2Client;
 import cz.bloodbear.oauth2client.velocity.utils.DatabaseManager;
-import cz.bloodbear.oauth2client.velocity.utils.PlaceholderRegistry;
 import net.luckperms.api.LuckPermsProvider;
 
 import java.security.SecureRandom;
@@ -93,10 +92,7 @@ public class OAuth2Command implements SimpleCommand {
             String url = OAuth2Client.OAuth2Handler().makeAuthorizationURL(code);
             player.sendMessage(
                 OAuth2Client.formatMessage(
-                    PlaceholderRegistry.replacePlaceholders(
-                        OAuth2Client.getMessage("command.oauth2.link", player).replace("[linkUrl]", url),
-                        player
-                    )
+                    OAuth2Client.getMessage("command.oauth2.link", player).replace("[linkUrl]", url)
                 )
             );
         }

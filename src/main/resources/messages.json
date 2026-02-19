@@ -8,14 +8,14 @@
       "limbodown": "<red>Limbo server is down</red>"
     },
     "oauth2": {
-      "usage": "Usage: myecl [OPTION]\n  login     Sign in with OAuth provider.\n            On the first time, links your OAuth provider account to your Minecraft account.\n  unlink    Unlink your Minecraft account from your OAuth provider account.\n  info      Show information about your linked OAuth2 account.",
+      "usage": "Usage: myecl [OPTION]\n  login     Sign in with [OAuth2ProviderName].\n            On the first time, links your [OAuth2ProviderName] account to your Minecraft account.\n  unlink    Unlink your Minecraft account from your [OAuth2ProviderName] account.\n  info      Show information about your linked [OAuth2ProviderName] account.",
       "alreadylinked": "<red>Your account is already linked.</red>",
-      "linked": "<green>Your account was linked successfully. ([OAuth2AccountUsername])</green>",
+      "linked": "<green>Your account was linked successfully. ([OAuth2Username])</green>",
       "notlinked": "<red>Your account is not linked</red>",
       "unlinked": "<green>Your account was unlinked successfully.</green>",
       "notloggedin": "<red>You are not logged in.\nPlease log in with /myecl login to join the server.</red>",
       "loggedout": "<green>You logged out successfully.</green>",
-      "info": "<blue>Your account is linked to OAuth2 provider account [OAuth2AccountUsername] ([OAuth2Id])</blue>",
+      "info": "<blue>Your account is linked to OAuth2 provider account [OAuthUsername] ([OAuth2UserID])</blue>",
       "link": "<blue>Link your account <underlined><click:open_url:'[linkUrl]'>here</click></underlined></blue>",
       "noperms": "<red>You don't have permission to use this command.</red>"
     }
