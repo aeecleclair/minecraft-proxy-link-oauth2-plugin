@@ -144,11 +144,12 @@ public class OAuth2Client {
             logger.error(e.getMessage());
             server.shutdown();
         }
+        String command = config.getString("server.command", "");
 
         server.getEventManager().register(this, new PlayerConnection());
-        server.getEventManager().register(this, new Blockers());
+        server.getEventManager().register(this, new Blockers(command));
         CommandManager commandManager = server.getCommandManager();
-        CommandMeta OAuth2CommandMeta = commandManager.metaBuilder("myecl").plugin(container).build();
+        CommandMeta OAuth2CommandMeta = commandManager.metaBuilder(command).plugin(container).build();
 
         commandManager.register(OAuth2CommandMeta, new OAuth2Command());
 

@@ -7,16 +7,20 @@ import com.velocitypowered.api.proxy.Player;
 import cz.bloodbear.oauth2client.velocity.OAuth2Client;
 
 public class Blockers {
+    private final String command;
+    public Blockers(String command) {
+        this.command = command;
+    }
 
     @Subscribe(priority = Short.MAX_VALUE)
     public void onCommand(CommandExecuteEvent event) {
         if (!(event.getCommandSource() instanceof Player player)) return;
         if (OAuth2Client.AuthManager().isAuthenticated(player.getUniqueId())) return;
 
-        var command = event.getCommand().split(" ")[0];
+        String command = event.getCommand().split(" ")[0];
 
-        if (command.equals("myecl")) return;
-        player.sendMessage(OAuth2Client.formatMessage("<red>Your account is not linked. Please link your account with /myecl login to join the server.</red>"));
+        if (command.equals(this.command)) return;
+        player.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.oauth2.notloggedin")));
         event.setResult(CommandExecuteEvent.CommandResult.denied());
     }
 
@@ -27,10 +31,10 @@ public class Blockers {
 
         String allowed = OAuth2Client.limbo(); // servers allowed before linking
         if (!event.getOriginalServer().getServerInfo().getName().equals(allowed)) {
-            event.getPlayer().sendMessage(OAuth2Client.formatMessage("<red>Your account is not linked. Please link your account with /myecl login to join the server.</red>"));
+            event.getPlayer().sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.oauth2.notloggedin")));
             event.setResult(ServerPreConnectEvent.ServerResult.denied());
             if (event.getPlayer().getCurrentServer().isEmpty()) 
-                event.getPlayer().disconnect(OAuth2Client.formatMessage("<red>Limbo server is down</red>"));
+                event.getPlayer().disconnect(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.oauth2.limbodown")));
         }
     }
 

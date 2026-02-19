@@ -2,7 +2,6 @@ package cz.bloodbear.oauth2client.velocity.commands;
 
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
-import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.Player;
 import cz.bloodbear.oauth2client.velocity.OAuth2Client;
 import cz.bloodbear.oauth2client.velocity.utils.DatabaseManager;
@@ -49,42 +48,42 @@ public class OAuth2Command implements SimpleCommand {
             );
             return;
         }
+        Player player = (Player) invocation.source();
 
-        if (!hasPermission(source)) {
-            source.sendMessage(
+        if (!hasPermission(player)) {
+            player.sendMessage(
                 OAuth2Client.formatMessage(
-                    OAuth2Client.getMessage("command.oauth2.noperms", (Player) invocation.source())
+                    OAuth2Client.getMessage("command.oauth2.noperms", player)
                 )
             );
             return;
         }
-
         if (args.length != 1) {
-            source.sendMessage(
+            player.sendMessage(
                 OAuth2Client.formatMessage(
-                    OAuth2Client.getMessage("command.oauth2.usage", (Player) invocation.source())
+                    OAuth2Client.getMessage("command.oauth2.usage", player)
                 )
             );
             return;
         }
-
-        if (!hasPermission(source, args[0].toLowerCase())) {
-            source.sendMessage(
+        if (!hasPermission(player, args[0].toLowerCase())) {
+            player.sendMessage(
                 OAuth2Client.formatMessage(
-                    OAuth2Client.getMessage("command.oauth2.noperms", (Player) invocation.source())
+                    OAuth2Client.getMessage("command.oauth2.noperms", player)
                 )
             );
             return;
         }
 
         DatabaseManager databaseManager = OAuth2Client.getDatabaseManager();
-        Player player = (Player)invocation.source();
 
         if (args[0].equalsIgnoreCase("login")) {
             if (OAuth2Client.AuthManager().isAuthenticated(player.getUniqueId())) {
-                source.sendMessage(
-                        OAuth2Client.formatMessage(
-                                OAuth2Client.getMessage("command.oauth2.alreadylinked", player)));
+                player.sendMessage(
+                    OAuth2Client.formatMessage(
+                        OAuth2Client.getMessage("command.oauth2.alreadylinked", player)
+                    )
+                );
                 return;
             }
 
@@ -92,30 +91,47 @@ public class OAuth2Command implements SimpleCommand {
             String code = generateCode();
             databaseManager.saveLinkRequest(player.getUniqueId().toString(), code);
             String url = OAuth2Client.OAuth2Handler().makeAuthorizationURL(code);
-            player.sendMessage(OAuth2Client.formatMessage(PlaceholderRegistry.replacePlaceholders(
-                    OAuth2Client.getMessage("command.oauth2.link", player).replace("[linkUrl]", url), player)));
+            player.sendMessage(
+                OAuth2Client.formatMessage(
+                    PlaceholderRegistry.replacePlaceholders(
+                        OAuth2Client.getMessage("command.oauth2.link", player).replace("[linkUrl]", url),
+                        player
+                    )
+                )
+            );
         }
 
         if (args[0].equalsIgnoreCase("logout")) {
 
             if (!OAuth2Client.AuthManager().isAuthenticated(player.getUniqueId())) {
-                player.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.oauth2.notloggedin")));
+                player.sendMessage(
+                    OAuth2Client.formatMessage(
+                        OAuth2Client.getMessage("command.oauth2.notloggedin")
+                    )
+                );
                 return;
             }
             OAuth2Client.AuthManager().revoke(player.getUniqueId());
             player.createConnectionRequest(OAuth2Client.getServer().getServer(OAuth2Client.limbo()).orElse(null)).fireAndForget();
-            player.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.oauth2.loggedout")));
+            player.sendMessage(
+                OAuth2Client.formatMessage(
+                    OAuth2Client.getMessage("command.oauth2.loggedout")
+                )
+            );
         }
 
         if (args[0].equalsIgnoreCase("unlink")) {
             if (!OAuth2Client.AuthManager().isAuthenticated(player.getUniqueId())) {
                 player.sendMessage(
-                        OAuth2Client.formatMessage(OAuth2Client.getMessage("command.oauth2.notloggedin")));
+                    OAuth2Client.formatMessage(
+                        OAuth2Client.getMessage("command.oauth2.notloggedin")
+                    )
+                );
                 return;
             }
 
             if (!databaseManager.isLinked(player.getUniqueId().toString())) {
-                source.sendMessage(
+                player.sendMessage(
                     OAuth2Client.formatMessage(
                         OAuth2Client.getMessage("command.oauth2.notlinked", player)
                     )
@@ -125,7 +141,7 @@ public class OAuth2Command implements SimpleCommand {
 
             databaseManager.unlinkAccount(player.getUniqueId().toString());
             player.createConnectionRequest(OAuth2Client.getServer().getServer(OAuth2Client.limbo()).orElse(null)).fireAndForget();
-            source.sendMessage(
+            player.sendMessage(
                 OAuth2Client.formatMessage(
                     OAuth2Client.getMessage("command.oauth2.unlinked", player)
                 )
@@ -134,7 +150,7 @@ public class OAuth2Command implements SimpleCommand {
 
         if (args[0].equalsIgnoreCase("info")) {
             if (!databaseManager.isLinked(player.getUniqueId().toString())) {
-                source.sendMessage(
+                player.sendMessage(
                     OAuth2Client.formatMessage(
                         OAuth2Client.getMessage("command.oauth2.notlinked", player)
                     )
@@ -142,50 +158,49 @@ public class OAuth2Command implements SimpleCommand {
                 return;
             }
 
-            source.sendMessage(
-                OAuth2Client.formatMessage(
-                    OAuth2Client.getMessage("command.oauth2.info", player)
-                )
-            );
+            player.sendMessage(
+                    OAuth2Client.formatMessage(
+                            OAuth2Client.getMessage("command.oauth2.info", player)));
         }
     }
 
+    // TODO: no usage?!
     public List<String> suggest(SimpleCommand.Invocation invocation) {
-        if (!(invocation.source() instanceof Player)) return new ArrayList<>();
+        if (!(invocation.source() instanceof Player))
+            return new ArrayList<>();
 
         if (invocation.arguments().length <= 1) {
             List<String> choices = Arrays.asList("login", "logout", "unlink", "info");
             List<String> finalChoices = new ArrayList<>();
             choices.forEach(choice -> {
-                if (hasPermission(invocation.source(), choice))
+                if (hasPermission((Player) invocation.source(), choice))
                     finalChoices.add(choice);
             });
-            if (invocation.arguments().length == 0) return choices;
+            if (invocation.arguments().length == 0)
+                return choices;
             return getArguments(finalChoices, invocation.arguments()[0]);
         }
 
         return new ArrayList<>();
     }
 
-    public static boolean hasPermission(CommandSource source) {
-        if (source instanceof ConsoleCommandSource) return true;
+    public static boolean hasPermission(Player player) {
         return LuckPermsProvider
             .get()
             .getUserManager()
-            .getUser(((Player) source).getUniqueId())
+            .getUser(player.getUniqueId())
             .getCachedData()
             .getPermissionData()
             .checkPermission("oauth2client.player")
             .asBoolean();
     }
 
-    public static boolean hasPermission(CommandSource source, String subcommand) {
-        if (source instanceof ConsoleCommandSource) return true;
+    public static boolean hasPermission(Player player, String subcommand) {
         return (
         LuckPermsProvider
             .get()
             .getUserManager()
-            .getUser(((Player) source).getUniqueId())
+            .getUser(player.getUniqueId())
             .getCachedData()
             .getPermissionData()
             .checkPermission(String.format("oauth2client.player.%s", subcommand.toLowerCase()))
@@ -193,11 +208,11 @@ public class OAuth2Command implements SimpleCommand {
         || LuckPermsProvider
             .get()
             .getUserManager()
-            .getUser(((Player) source).getUniqueId())
+            .getUser(player.getUniqueId())
             .getCachedData()
             .getPermissionData()
             .checkPermission("oauth2client.player.*")
             .asBoolean()
-    );
+        );
     }
 }

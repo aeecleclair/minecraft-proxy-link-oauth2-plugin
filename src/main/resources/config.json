@@ -17,6 +17,7 @@
     }
   },
   "oauth2": {
+    "provider": "MyECL",
     "url": "https://youroauth2provider.com",
     "client": {
       "id": "",
@@ -31,6 +32,7 @@
   },
   "server": {
     "limbo": "limbo",
-    "lobby": "lobby"
+    "lobby": "lobby",
+    "command": "myecl"
   }
 }
