@@ -195,7 +195,16 @@ public class OAuth2Client {
     public static ConsoleColor logger() { return instance.logger; }
     public static ProxyServer getServer() { return instance.server; }
 
-    public static Component formatMessage(String input) { return instance.miniMessage.deserialize(input); }
+    public static Component formatMessage(String input) {
+        return instance.miniMessage.deserialize(input);
+    }
+    
+    public static String limbo() {
+        return instance.config.getString("server.limbo", "limbo");
+    }
+    public static String lobby() {
+        return instance.config.getString("server.lobby", "lobby");
+    }
 
     // TODO: use that in /myecl info
     public static Duration getUptime() { return Duration.ofMillis(System.currentTimeMillis() - instance.startTime); }

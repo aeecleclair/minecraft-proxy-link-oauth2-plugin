@@ -28,5 +28,9 @@
       "userinfo": "/auth/userinfo"
     },
     "scope": "profile"
+  },
+  "server": {
+    "limbo": "limbo",
+    "lobby": "lobby"
   }
 }

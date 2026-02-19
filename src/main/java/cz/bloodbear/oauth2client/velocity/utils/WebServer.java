@@ -137,7 +137,7 @@ public class WebServer {
                 player.ifPresent(p -> {
                     p.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.oauth2.linked", p)));
                     // Move the player to the lobby/host server after linking
-                    p.createConnectionRequest(OAuth2Client.getServer().getServer("lobby").orElse(null)).fireAndForget();
+                    p.createConnectionRequest(OAuth2Client.getServer().getServer(OAuth2Client.lobby()).orElse(null)).fireAndForget();
                 });
 
             } catch (Exception e) { OAuth2Client.logger().error(e.getMessage()); }

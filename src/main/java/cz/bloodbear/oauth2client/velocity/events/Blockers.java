@@ -6,8 +6,6 @@ import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import cz.bloodbear.oauth2client.velocity.OAuth2Client;
 
-import java.util.Set;
-
 public class Blockers {
 
     @Subscribe(priority = Short.MAX_VALUE)
@@ -27,9 +25,8 @@ public class Blockers {
 
         if (OAuth2Client.AuthManager().isAuthenticated(event.getPlayer().getUniqueId())) return;
 
-        Set<String> allowed = Set.of("limbo", "limbo1", "limbo2"); // servers allowed before linking
-
-        if (!allowed.contains(event.getOriginalServer().getServerInfo().getName())) {
+        String allowed = OAuth2Client.limbo(); // servers allowed before linking
+        if (!event.getOriginalServer().getServerInfo().getName().equals(allowed)) {
             event.getPlayer().sendMessage(OAuth2Client.formatMessage("<red>Your account is not linked. Please link your account with /myecl login to join the server.</red>"));
             event.setResult(ServerPreConnectEvent.ServerResult.denied());
             if (event.getPlayer().getCurrentServer().isEmpty()) 
