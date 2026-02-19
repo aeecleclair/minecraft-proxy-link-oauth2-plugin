@@ -124,7 +124,11 @@ public class OAuth2Client {
             config.getString("oauth2.url", ""),
             config.getString("oauth2.client.id", ""),
             config.getString("oauth2.client.secret", ""),
-            redirect
+            redirect,
+            config.getString("oauth2.endpoint.authorization", ""),
+            config.getString("oauth2.endpoint.userinfo", ""),
+            config.getString("oauth2.endpoint.token", ""),
+            config.getString("oauth2.scope", "")
         );
 
         PlaceholderRegistry.registerPlaceholder(new PlayerNamePlaceholder());
@@ -192,23 +196,6 @@ public class OAuth2Client {
     public static ProxyServer getServer() { return instance.server; }
 
     public static Component formatMessage(String input) { return instance.miniMessage.deserialize(input); }
-
-    public static String makeAuthorizationURL(String code) {
-        JsonConfig config = instance.config;
-        return config.getString("oauth2.url", "")
-            + config.getString("oauth2.endpoint.authorization", "")
-            + "?client_id=" + config.getString("oauth2.client.id", "")
-            + "&redirect_uri=" + instance.redirect
-            + "&response_type=code"
-            + "&scope=" + config.getString("oauth2.scope", "")
-            + "&state=" + code;
-    }
-    public static String tokenEndpoint() {
-        return instance.config.getString("oauth2.endpoint.token", "");
-    }
-    public static String userinfoEndpoint() {
-        return instance.config.getString("oauth2.endpoint.userinfo", "");
-    }
 
     // TODO: use that in /myecl info
     public static Duration getUptime() { return Duration.ofMillis(System.currentTimeMillis() - instance.startTime); }
