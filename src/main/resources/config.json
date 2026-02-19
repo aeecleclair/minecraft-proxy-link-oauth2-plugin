@@ -21,6 +21,12 @@
     "client": {
       "id": "",
       "secret": ""
-    }
+    },
+    "endpoints": {
+      "authorization": "/auth/authorize",
+      "token": "/auth/token",
+      "userinfo": "/auth/userinfo"
+    },
+    "scope": "profile"
   }
 }
