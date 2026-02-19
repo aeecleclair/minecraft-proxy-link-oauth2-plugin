@@ -17,6 +17,7 @@ public class OAuth2Handler {
     private final String TOKEN_ENDPOINT;
     private final String USERINFO_ENDPOINT;
     private final String SCOPE;
+    private final String CLAIM;
 
     private final OkHttpClient httpClient;
 
@@ -28,7 +29,8 @@ public class OAuth2Handler {
         String AUTHORIZATION_ENDPOINT,
         String TOKEN_ENDPOINT,
         String USERINFO_ENDPOINT,
-        String SCOPE
+        String SCOPE,
+        String CLAIM
     ) {
         this.AUTH_URL = AUTH_URL;
         this.CLIENT_ID = CLIENT_ID;
@@ -38,6 +40,7 @@ public class OAuth2Handler {
         this.TOKEN_ENDPOINT = TOKEN_ENDPOINT;
         this.USERINFO_ENDPOINT = USERINFO_ENDPOINT;
         this.SCOPE = SCOPE;
+        this.CLAIM = CLAIM;
 
         this.httpClient = new OkHttpClient();
     }
@@ -94,7 +97,7 @@ public class OAuth2Handler {
                     String responseBody = response.body().string();
                     String userId = responseBody.substring(responseBody.indexOf("\"id\":\"") + 6);
                     userId = userId.substring(0, userId.indexOf("\""));
-                    String nickname = responseBody.substring(responseBody.indexOf("\"nickname\":\"") + 12);
+                    String nickname = responseBody.substring(responseBody.indexOf("\""+ CLAIM +"\":\"") + CLAIM.length());
                     nickname = nickname.substring(0, nickname.indexOf("\""));
                     return new OAuth2Account(userId, nickname);
                 }

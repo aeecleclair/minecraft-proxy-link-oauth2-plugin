@@ -128,7 +128,8 @@ public class OAuth2Client {
             config.getString("oauth2.endpoint.authorization", ""),
             config.getString("oauth2.endpoint.userinfo", ""),
             config.getString("oauth2.endpoint.token", ""),
-            config.getString("oauth2.scope", "")
+            config.getString("oauth2.scope", ""),
+            config.getString("oauth2.claim", "")
         );
 
         PlaceholderRegistry.registerPlaceholder(new PlayerNamePlaceholder());

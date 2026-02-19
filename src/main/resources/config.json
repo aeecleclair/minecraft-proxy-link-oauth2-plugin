@@ -28,7 +28,8 @@
       "token": "/auth/token",
       "userinfo": "/auth/userinfo"
     },
-    "scope": "profile"
+    "scope": "profile",
+    "claim": "nickname"
   },
   "server": {
     "limbo": "limbo",
