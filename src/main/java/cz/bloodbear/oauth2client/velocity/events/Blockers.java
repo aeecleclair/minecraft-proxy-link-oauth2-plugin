@@ -7,9 +7,9 @@ import com.velocitypowered.api.proxy.Player;
 import cz.bloodbear.oauth2client.velocity.OAuth2Client;
 
 public class Blockers {
-    private final String command;
-    public Blockers(String command) {
-        this.command = command;
+    private final String commandName;
+    public Blockers(String commandName) {
+        this.commandName = commandName;
     }
 
     @Subscribe(priority = Short.MAX_VALUE)
@@ -17,9 +17,8 @@ public class Blockers {
         if (!(event.getCommandSource() instanceof Player player)) return;
         if (OAuth2Client.AuthManager().isAuthenticated(player.getUniqueId())) return;
 
-        String command = event.getCommand().split(" ")[0];
-
-        if (command.equals(this.command)) return;
+        String commandName = event.getCommand().split(" ")[0];
+        if (commandName.equals(this.commandName)) return;
         player.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.oauth2.notloggedin")));
         event.setResult(CommandExecuteEvent.CommandResult.denied());
     }

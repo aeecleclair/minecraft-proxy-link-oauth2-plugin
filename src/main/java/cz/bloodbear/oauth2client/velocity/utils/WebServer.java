@@ -17,20 +17,20 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
-import net.luckperms.api.node.Node;
+import net.luckperms.api.node.types.SuffixNode;
 
 public class WebServer {
     private HttpServer server;
     private final int port;
     private final boolean useDomain;
-    private final String domain;
+    private final String baseUrl;
     private final int nThreads;
     private final String callbackEndpoint;
 
-    public WebServer(int port, boolean useDomain, String domain, int nThreads, String callbackEndpoint) {
+    public WebServer(int port, boolean useDomain, String baseUrl, int nThreads, String callbackEndpoint) {
         this.port = port;
         this.useDomain = useDomain;
-        this.domain = domain;
+        this.baseUrl = baseUrl;
         this.nThreads = nThreads;
         this.callbackEndpoint = callbackEndpoint;
     }
@@ -48,7 +48,7 @@ public class WebServer {
         server.start();
         OAuth2Client.logger().info("Webserver is running on port " + port);
         if (useDomain) {
-            OAuth2Client.logger().info("using custom domain " + domain);
+            OAuth2Client.logger().info("using custom base URL " + baseUrl);
         } else {
             OAuth2Client.logger().warn("Webserver is not using domain!");
         }
@@ -71,8 +71,8 @@ public class WebServer {
                 }
 
                 if (useDomain) {
-                    String origin = exchange.getRequestHeaders().getFirst("Origin");
-                    if (domain.equalsIgnoreCase(origin)) {
+                    String referer = exchange.getRequestHeaders().getFirst("Referer");
+                    if (!referer.equalsIgnoreCase(baseUrl)) {
                         sendResponse(exchange, 403, "Forbidden");
                         return;
                     }
@@ -127,7 +127,7 @@ public class WebServer {
                     // And register the nickname as a LuckPerms suffix
                     User user = LuckPermsProvider.get().getUserManager()
                         .loadUser(UUID.fromString(minecraftUUID)).get();
-                    user.data().add(Node.builder("suffix.1." + OAuth2Account.username()).build());
+                    user.data().add(SuffixNode.builder("(" + OAuth2Account.username() + ")",1).build());
                     LuckPermsProvider.get().getUserManager()
                         .saveUser(user);
                 }

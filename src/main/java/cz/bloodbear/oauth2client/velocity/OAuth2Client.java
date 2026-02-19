@@ -33,7 +33,7 @@ import java.time.Duration;
     id = "oauth2client", 
     name = "OAuth2Client", 
     version = "25.7",
-    authors = { "Mtn16", "warix8" }, 
+    authors = { "Mtn16", "warix8", "Marc-Andrieu" }, 
     url = "https://github.com/aeecleclair/minecraft-proxy-link-oauth2-plugin",
     description = "A Velocity plugin for OAuth2 integration.",
     dependencies = {
@@ -58,7 +58,6 @@ public class OAuth2Client {
     private final HtmlPage missingStatePage;
     private final HtmlPage invalidPage;
     private final HtmlPage alreadyLinkedPage;
-    private final String redirect;
 
     private final DatabaseManager databaseManager;
     private final WebServer webServer;
@@ -105,31 +104,27 @@ public class OAuth2Client {
             config.getBoolean("database.useSSL", false)
         );
 
+        String baseUrl = (config.getBoolean("webserver.domain.use", false)
+                && config.getBoolean("webserver.domain.https", false)
+                ? "https://" : "http://")
+            + (config.getBoolean("webserver.domain.use", false)
+                ? config.getString("webserver.domain.domain", "")
+                : config.getString("webserver.ip", "") + ":" + config.getString("webserver.port", ""));
+
         webServer = new WebServer(
             config.getInt("webserver.port", 80),
             config.getBoolean("webserver.domain.use", false),
-            config.getString("webserver.domain.domain", ""),
+            baseUrl,
             config.getInt("webserver.threads", 4),
             config.getString("webserver.callback", "/callback")
         );
 
-        if (config.getBoolean("webserver.domain.use", false)) {
-            if (config.getBoolean("webserver.domain.https", false)) {
-                redirect = "https://" + config.getString("webserver.domain.domain", "")
-                    + config.getString("webserver.callback", "/callback");
-            } else {
-                redirect = "http://" + config.getString("webserver.domain.domain", "")
-                    + config.getString("webserver.callback", "/callback");
-            }
-        } else {
-            redirect = "http://" + config.getString("webserver.ip", "") + ":" + config.getString("webserver.port", "")
-                    + config.getString("webserver.callback", "/callback");
-        }
         this.OAuth2Handler = new OAuth2Handler(
             config.getString("oauth2.url", ""),
             config.getString("oauth2.client.id", ""),
             config.getString("oauth2.client.secret", ""),
-            redirect,
+            baseUrl
+            + config.getString("webserver.callback", "/callback"),
             config.getString("oauth2.endpoint.authorization", ""),
             config.getString("oauth2.endpoint.userinfo", ""),
             config.getString("oauth2.endpoint.token", ""),
@@ -150,12 +145,12 @@ public class OAuth2Client {
             logger.error(e.getMessage());
             server.shutdown();
         }
-        String command = config.getString("server.command", "");
+        String commandName = config.getString("server.command", "");
 
         server.getEventManager().register(this, new PlayerConnection());
-        server.getEventManager().register(this, new Blockers(command));
+        server.getEventManager().register(this, new Blockers(commandName));
         CommandManager commandManager = server.getCommandManager();
-        CommandMeta OAuth2CommandMeta = commandManager.metaBuilder(command).plugin(container).build();
+        CommandMeta OAuth2CommandMeta = commandManager.metaBuilder(commandName).plugin(container).build();
 
         commandManager.register(OAuth2CommandMeta, new OAuth2Command());
 
