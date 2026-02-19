@@ -24,24 +24,26 @@ public class WebServer {
     private final int port;
     private final boolean useDomain;
     private final String domain;
+    private final int nThreads;
+    private final String callbackEndpoint;
 
-    public WebServer(int port, boolean useDomain, String domain) {
+    public WebServer(int port, boolean useDomain, String domain, int nThreads, String callbackEndpoint) {
         this.port = port;
         this.useDomain = useDomain;
         this.domain = domain;
+        this.nThreads = nThreads;
+        this.callbackEndpoint = callbackEndpoint;
     }
 
-
-
     public void start() throws IOException {
-        Executor executor = Executors.newFixedThreadPool(4, r -> {
+        Executor executor = Executors.newFixedThreadPool(nThreads, r -> {
             Thread t = new Thread(r);
             t.setDaemon(false);
             t.setName("HttpServer-Worker");
             return t;
         });
         server = HttpServer.create(new InetSocketAddress(port), 0);
-        server.createContext("/callback", new OAuthCallbackHandler());
+        server.createContext(callbackEndpoint, new OAuthCallbackHandler());
         server.setExecutor(executor);
         server.start();
         OAuth2Client.logger().info("Webserver is running on port " + port);

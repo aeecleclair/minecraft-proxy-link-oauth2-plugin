@@ -14,7 +14,9 @@
       "use": false,
       "domain": "verify.yourserver.com",
       "https": true
-    }
+    },
+    "threads": 4,
+    "callback": "/callback"
   },
   "oauth2": {
     "provider": "MyECL",

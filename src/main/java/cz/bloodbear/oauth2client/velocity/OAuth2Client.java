@@ -108,17 +108,22 @@ public class OAuth2Client {
         webServer = new WebServer(
             config.getInt("webserver.port", 80),
             config.getBoolean("webserver.domain.use", false),
-            config.getString("webserver.domain.domain", "")
+            config.getString("webserver.domain.domain", ""),
+            config.getInt("webserver.threads", 4),
+            config.getString("webserver.callback", "/callback")
         );
 
         if (config.getBoolean("webserver.domain.use", false)) {
             if (config.getBoolean("webserver.domain.https", false)) {
-                redirect = "https://" + config.getString("webserver.domain.domain", "") + "/callback";
+                redirect = "https://" + config.getString("webserver.domain.domain", "")
+                    + config.getString("webserver.callback", "/callback");
             } else {
-                redirect = "http://" + config.getString("webserver.domain.domain", "") + "/callback";
+                redirect = "http://" + config.getString("webserver.domain.domain", "")
+                    + config.getString("webserver.callback", "/callback");
             }
         } else {
-            redirect = "http://" + config.getString("webserver.ip", "") + ":" + config.getString("webserver.port", "")  + "/callback";
+            redirect = "http://" + config.getString("webserver.ip", "") + ":" + config.getString("webserver.port", "")
+                    + config.getString("webserver.callback", "/callback");
         }
         this.OAuth2Handler = new OAuth2Handler(
             config.getString("oauth2.url", ""),
