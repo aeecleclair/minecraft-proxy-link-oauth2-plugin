@@ -1,3 +1,4 @@
-/OAuth2Client.iml
 /.idea/
 /target/
+src/main/resources/**/*.*
+!src/main/resources/**/template.*.*
