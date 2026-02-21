@@ -128,13 +128,12 @@ public class OAuth2Command implements SimpleCommand {
 
             if (!databaseManager.isLinked(player.getUniqueId().toString())) {
                 player.sendMessage(
-                    OAuth2Client.formatMessage(
-                        OAuth2Client.getMessage("command.notlinked", player)
-                    )
-                );
+                        OAuth2Client.formatMessage(
+                                OAuth2Client.getMessage("command.notlinked", player)));
                 return;
             }
 
+            OAuth2Client.AuthManager().revoke(player.getUniqueId());
             databaseManager.unlinkAccount(player.getUniqueId().toString());
             player.createConnectionRequest(OAuth2Client.getServer().getServer(OAuth2Client.limbo()).orElse(null)).fireAndForget();
             player.sendMessage(
