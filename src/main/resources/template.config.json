@@ -1,41 +1,41 @@
 {
   "database": {
-    "host": "",
+    "host": "<db hostname>",
     "port": 3306,
-    "name": "",
-    "username": "",
-    "password": "",
+    "name": "<db name>",
+    "username": "<db user>",
+    "password": "<db passwd>",
     "useSSL": false
   },
   "webserver": {
     "port": 80,
-    "ip": "192.168.0.1",
+    "ip": "127.0.0.1",
     "domain": {
-      "use": false,
-      "domain": "verify.yourserver.com",
+      "use": true,
+      "domain": "<your.subdomain.org>",
       "https": true
     },
     "threads": 4,
     "callback": "/callback"
   },
   "oauth2": {
-    "provider": "MyECL",
-    "url": "https://youroauth2provider.com",
+    "provider": "Name of the OAuth2 Provider",
+    "url": "https://<your.oauth2-provider.org>",
     "client": {
-      "id": "",
-      "secret": ""
+      "id": "<client ID>",
+      "secret": "<client secret>"
     },
     "endpoints": {
       "authorization": "/auth/authorize",
       "token": "/auth/token",
       "userinfo": "/auth/userinfo"
     },
-    "scope": "profile",
-    "claim": "nickname"
+    "scope": "<openid or profile>",
+    "claim": "<name, firstname, nickname, etc.>"
   },
   "server": {
     "limbo": "limbo",
     "lobby": "lobby",
-    "command": "myecl"
+    "command": "<name for Minecraft command>"
   }
 }
