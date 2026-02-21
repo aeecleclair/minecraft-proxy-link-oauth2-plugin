@@ -55,11 +55,15 @@ public class OAuth2Client {
     private final MiniMessage miniMessage;
 
     private final HtmlPage linkedPage;
-    private final HtmlPage failedPage;
-    private final HtmlPage missingCodePage;
+
     private final HtmlPage missingStatePage;
-    private final HtmlPage invalidPage;
-    private final HtmlPage alreadyLinkedPage;
+    private final HtmlPage missingCodePage;
+
+    private final HtmlPage invalidStatePage;
+    private final HtmlPage invalidCodePage;
+
+    private final HtmlPage alreadyLinkedMinecraftPage;
+    private final HtmlPage alreadyLinkedOAuth2Page;
 
     private final DatabaseManager databaseManager;
     private final WebServer webServer;
@@ -91,11 +95,12 @@ public class OAuth2Client {
         startTime = System.currentTimeMillis();
         Path HTMLDirectory = dataDirectory.resolve("html");
         linkedPage = new HtmlPage(HTMLDirectory, "linked.html");
-        failedPage = new HtmlPage(HTMLDirectory, "failed.html");
-        missingCodePage = new HtmlPage(HTMLDirectory, "missingCode.html");
         missingStatePage = new HtmlPage(HTMLDirectory, "missingState.html");
-        invalidPage = new HtmlPage(HTMLDirectory, "invalid.html");
-        alreadyLinkedPage = new HtmlPage(HTMLDirectory, "alreadyLinked.html");
+        missingCodePage = new HtmlPage(HTMLDirectory, "missingCode.html");
+        invalidStatePage = new HtmlPage(HTMLDirectory, "invalidState.html");
+        invalidCodePage = new HtmlPage(HTMLDirectory, "invalidCode.html");
+        alreadyLinkedMinecraftPage = new HtmlPage(HTMLDirectory, "alreadyLinkedMinecraftPage.html");
+        alreadyLinkedOAuth2Page = new HtmlPage(HTMLDirectory, "alreadyLinkedMinecraftPage.html");
 
         databaseManager = new DatabaseManager(
             config.getString("database.host", ""),
@@ -186,12 +191,14 @@ public class OAuth2Client {
             return instance.missingStatePage;
         } else if (name.equalsIgnoreCase("codeMissing")) {
             return instance.missingCodePage;
-        } else if (name.equalsIgnoreCase("invalid")) {
-            return instance.invalidPage;
-        } else if (name.equalsIgnoreCase("failed")) {
-            return instance.failedPage;
-        } else if (name.equalsIgnoreCase("alreadyLinked")) {
-            return instance.alreadyLinkedPage;
+        } else if (name.equalsIgnoreCase("invalidState")) {
+            return instance.invalidStatePage;
+        } else if (name.equalsIgnoreCase("invalidCode")) {
+            return instance.invalidCodePage;
+        } else if (name.equalsIgnoreCase("alreadyLinkedMinecraft")) {
+            return instance.alreadyLinkedMinecraftPage;
+        } else if (name.equalsIgnoreCase("alreadyLinkedOAuth2")) {
+            return instance.alreadyLinkedOAuth2Page;
         }
         return null;
     }

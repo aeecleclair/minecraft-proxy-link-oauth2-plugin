@@ -89,13 +89,13 @@ public class WebServer {
 
                 String minecraftUUID = OAuth2Client.getDatabaseManager().getPlayerByCode(state);
                 if (minecraftUUID == null) {
-                    sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("invalid").getContent());
+                    sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("invalidState").getContent());
                     return;
                 }
 
                 OAuth2Account OAuth2Account = OAuth2Client.OAuth2Handler().getOAuth2Account(code);
                 if (OAuth2Account == null) {
-                    sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("failed").getContent());
+                    sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("invalidCode").getContent());
                     return;
                 }
 
@@ -109,13 +109,13 @@ public class WebServer {
                     // If the UUID is already linked, we need to check if it's linked to the same account on the OAuth2 provider
                     OAuth2Account existingAccount = OAuth2Client.getDatabaseManager().getOAuth2Account(minecraftUUID);
                     if (!existingAccount.id().equals(OAuth2Account.id())) {
-                        sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("alreadyLinked").getContent());
+                        sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("alreadyLinkedMinecraft").getContent());
                         return;
                     }
                 } else {
                     // If the UUID is not linked, we need to check if the OAuth2 provider account is already linked to another UUID
                     if (OAuth2Client.getDatabaseManager().isOAuth2AccountLinked(OAuth2Account.id())) {
-                        sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("alreadyLinked").getContent());
+                        sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("alreadyLinkedOAuth2").getContent());
                         return;
                     }
                     // Then we can proceed to link the account
