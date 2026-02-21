@@ -95,9 +95,11 @@ public class OAuth2Handler {
             try (Response response = this.httpClient.newCall(request).execute()) {
                 if (response.isSuccessful() && response.body() != null) {
                     String responseBody = response.body().string();
-                    String userId = responseBody.substring(responseBody.indexOf("\"id\":\"") + 6);
+                    String userId = responseBody
+                        .substring(responseBody.indexOf("\"id\":\"") + 6);
                     userId = userId.substring(0, userId.indexOf("\""));
-                    String nickname = responseBody.substring(responseBody.indexOf("\""+ CLAIM +"\":\"") + CLAIM.length());
+                    String nickname = responseBody
+                        .substring(responseBody.indexOf("\"" + CLAIM + "\":\"") + CLAIM.length() + 4);
                     nickname = nickname.substring(0, nickname.indexOf("\""));
                     return new OAuth2Account(userId, nickname);
                 }

@@ -106,30 +106,30 @@ public class OAuth2Client {
             config.getBoolean("database.useSSL", false)
         );
 
-        String baseUrl = (config.getBoolean("webserver.domain.use", false)
+        webServer = new WebServer(
+            config.getInt("webserver.port", 80),
+            config.getBoolean("webserver.domain.use", false),
+            config.getInt("webserver.threads", 4),
+            config.getString("webserver.callback", "/callback"),
+            config.getString("oauth2.url", "")
+        );
+
+        String redirectURI = (config.getBoolean("webserver.domain.use", false)
                 && config.getBoolean("webserver.domain.https", false)
                 ? "https://" : "http://")
             + (config.getBoolean("webserver.domain.use", false)
                 ? config.getString("webserver.domain.domain", "")
-                : config.getString("webserver.ip", "") + ":" + config.getString("webserver.port", ""));
-
-        webServer = new WebServer(
-            config.getInt("webserver.port", 80),
-            config.getBoolean("webserver.domain.use", false),
-            baseUrl,
-            config.getInt("webserver.threads", 4),
-            config.getString("webserver.callback", "/callback")
-        );
+                : config.getString("webserver.ip", "") + ":" + config.getString("webserver.port", ""))
+            + config.getString("webserver.callback", "/callback");
 
         this.OAuth2Handler = new OAuth2Handler(
             config.getString("oauth2.url", ""),
             config.getString("oauth2.client.id", ""),
             config.getString("oauth2.client.secret", ""),
-            baseUrl
-            + config.getString("webserver.callback", "/callback"),
-            config.getString("oauth2.endpoint.authorization", ""),
-            config.getString("oauth2.endpoint.userinfo", ""),
-            config.getString("oauth2.endpoint.token", ""),
+            redirectURI,
+            config.getString("oauth2.endpoints.authorization", ""),
+            config.getString("oauth2.endpoints.token", ""),
+            config.getString("oauth2.endpoints.userinfo", ""),
             config.getString("oauth2.scope", ""),
             config.getString("oauth2.claim", "")
         );

@@ -23,16 +23,16 @@ public class WebServer {
     private HttpServer server;
     private final int port;
     private final boolean useDomain;
-    private final String baseUrl;
     private final int nThreads;
     private final String callbackEndpoint;
+    private final String AuthUrl;
 
-    public WebServer(int port, boolean useDomain, String baseUrl, int nThreads, String callbackEndpoint) {
+    public WebServer(int port, boolean useDomain, int nThreads, String callbackEndpoint, String AuthUrl) {
         this.port = port;
         this.useDomain = useDomain;
-        this.baseUrl = baseUrl;
         this.nThreads = nThreads;
         this.callbackEndpoint = callbackEndpoint;
+        this.AuthUrl = AuthUrl;
     }
 
     public void start() throws IOException {
@@ -47,11 +47,6 @@ public class WebServer {
         server.setExecutor(executor);
         server.start();
         OAuth2Client.logger().info("Webserver is running on port " + port);
-        if (useDomain) {
-            OAuth2Client.logger().info("using custom base URL " + baseUrl);
-        } else {
-            OAuth2Client.logger().warn("Webserver is not using domain!");
-        }
     }
 
     public void stop() {
@@ -72,7 +67,7 @@ public class WebServer {
 
                 if (useDomain) {
                     String referer = exchange.getRequestHeaders().getFirst("Referer");
-                    if (!referer.equalsIgnoreCase(baseUrl)) {
+                    if (!referer.equalsIgnoreCase(AuthUrl + "/")) {
                         sendResponse(exchange, 403, "Forbidden");
                         return;
                     }
@@ -107,6 +102,7 @@ public class WebServer {
                 // From this point, we have a valid UUID and an account from the OAuth2 provider.
                 // We would like to check if the OAuth2 provider account is already linked,
                 // and if the current Minecraft UUID corresponds to this account.
+                OAuth2Client.logger().debug("Login attempt for " + OAuth2Account.username() + " as " + minecraftUUID + ".");
 
                 if (OAuth2Client.getDatabaseManager().isLinked(minecraftUUID)) {
 
