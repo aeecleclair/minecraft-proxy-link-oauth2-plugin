@@ -19,7 +19,7 @@ public class Blockers {
 
         String commandName = event.getCommand().split(" ")[0];
         if (commandName.equals(this.commandName)) return;
-        player.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.oauth2.notloggedin")));
+        player.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.notloggedin")));
         event.setResult(CommandExecuteEvent.CommandResult.denied());
     }
 
@@ -30,10 +30,10 @@ public class Blockers {
 
         String allowed = OAuth2Client.limbo(); // servers allowed before linking
         if (!event.getOriginalServer().getServerInfo().getName().equals(allowed)) {
-            event.getPlayer().sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.oauth2.notloggedin")));
+            event.getPlayer().sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.notloggedin")));
             event.setResult(ServerPreConnectEvent.ServerResult.denied());
             if (event.getPlayer().getCurrentServer().isEmpty()) 
-                event.getPlayer().disconnect(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.oauth2.limbodown")));
+                event.getPlayer().disconnect(OAuth2Client.formatMessage(OAuth2Client.getMessage("generic.limbodown")));
         }
     }
 

@@ -133,7 +133,7 @@ public class WebServer {
 
                 Optional<Player> player = OAuth2Client.getServer().getPlayer(UUID.fromString(minecraftUUID));
                 player.ifPresent(p -> {
-                    p.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.oauth2.linked", p)));
+                    p.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.linked", p)));
                     // Move the player to the lobby/host server after linking
                     p.createConnectionRequest(OAuth2Client.getServer().getServer(OAuth2Client.lobby()).orElse(null)).fireAndForget();
                 });
