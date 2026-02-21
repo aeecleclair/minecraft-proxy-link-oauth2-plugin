@@ -16,6 +16,7 @@ import cz.bloodbear.oauth2client.core.utils.ConsoleColor;
 import cz.bloodbear.oauth2client.velocity.commands.OAuth2Command;
 import cz.bloodbear.oauth2client.velocity.events.Blockers;
 import cz.bloodbear.oauth2client.velocity.events.PlayerConnection;
+import cz.bloodbear.oauth2client.velocity.placeholders.MinecraftCommandNamePlaceholder;
 import cz.bloodbear.oauth2client.velocity.placeholders.MinecraftUserIDPlaceholder;
 import cz.bloodbear.oauth2client.velocity.placeholders.MinecraftUsernamePlaceholder;
 import cz.bloodbear.oauth2client.velocity.placeholders.OAuth2UserIDPlaceholder;
@@ -145,6 +146,8 @@ public class OAuth2Client {
         PlaceholderRegistry.registerPlaceholder(new OAuth2UsernamePlaceholder());
         PlaceholderRegistry.registerPlaceholder(new OAuth2ProviderNamePlaceholder(
             config.getString("oauth2.provider", "")));
+        PlaceholderRegistry.registerPlaceholder(new MinecraftCommandNamePlaceholder(
+            config.getString("server.command", "")));
 
         this.logger.info("Started OAuth2 plugin successfully!");
     }
