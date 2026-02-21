@@ -112,6 +112,7 @@ public class WebServer {
                         sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("alreadyLinkedMinecraft").getContent());
                         return;
                     }
+                    moveToLobby(minecraftUUID, false);
                 } else {
                     // If the UUID is not linked, we need to check if the OAuth2 provider account is already linked to another UUID
                     if (OAuth2Client.getDatabaseManager().isOAuth2AccountLinked(OAuth2Account.id())) {
@@ -123,22 +124,25 @@ public class WebServer {
                     // And register the nickname as a LuckPerms suffix
                     User user = LuckPermsProvider.get().getUserManager()
                         .loadUser(UUID.fromString(minecraftUUID)).get();
-                    user.data().add(SuffixNode.builder("(" + OAuth2Account.username() + ")",1).build());
+                    user.data().add(SuffixNode.builder("(" + OAuth2Account.username() + ")", 1).build());
                     LuckPermsProvider.get().getUserManager()
-                        .saveUser(user);
+                            .saveUser(user);
+                    moveToLobby(minecraftUUID, true);
                 }
 
                 OAuth2Client.AuthManager().authenticate(UUID.fromString(minecraftUUID));
                 sendHtmlResponse(exchange, 200, OAuth2Client.getHtmlPage("linked").getContent());
 
-                Optional<Player> player = OAuth2Client.getServer().getPlayer(UUID.fromString(minecraftUUID));
-                player.ifPresent(p -> {
-                    p.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.linked", p)));
-                    // Move the player to the lobby/host server after linking
-                    p.createConnectionRequest(OAuth2Client.getServer().getServer(OAuth2Client.lobby()).orElse(null)).fireAndForget();
-                });
-
             } catch (Exception e) { OAuth2Client.logger().error(e.getMessage()); }
+        }
+
+        private static void moveToLobby(String minecraftUUID, boolean firstTime) {
+            Optional<Player> player = OAuth2Client.getServer().getPlayer(UUID.fromString(minecraftUUID));
+            player.ifPresent(p -> {
+                p.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage(firstTime ? "command.linked" : "command.loggedin", p)));
+                // Move the player to the lobby/host server after linking
+                p.createConnectionRequest(OAuth2Client.getServer().getServer(OAuth2Client.lobby()).orElse(null)).fireAndForget();
+            });
         }
     }
 

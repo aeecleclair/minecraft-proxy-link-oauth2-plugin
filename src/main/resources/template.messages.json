@@ -4,16 +4,17 @@
     "limbodown": "<red>Limbo server is down</red>"
   },
   "command": {
-    "usage": "Usage: /[MinecraftCommandName] [OPTION]\n  login     Sign in with [OAuth2ProviderName].\n            On the first time, links your [OAuth2ProviderName] account to your Minecraft account.\n  unlink    Unlink your Minecraft account from your [OAuth2ProviderName] account.\n  info      Show information about your linked [OAuth2ProviderName] account.",
-    "alreadylinked": "<red>Your account is already linked.</red>",
-    "linked": "<green>Your account was linked successfully. ([OAuth2Username])</green>",
-    "notlinked": "<red>Your account is not linked</red>",
-    "unlinked": "<green>Your account was unlinked successfully.</green>",
-    "notloggedin": "<red>You are not logged in.\nPlease log in with /[MinecraftCommandName] login to join the server.</red>",
-    "loggedout": "<green>You logged out successfully.</green>",
-    "info": "<blue>Your Minecraft account is linked to [OAuth2ProviderName] account [OAuth2Username]</blue>",
-    "link": "<blue>Link your account <underlined><click:open_url:'[linkUrl]'>here</click></underlined></blue>",
-    "noperms": "<red>You don't have permission to use this command.</red>",
-    "playeronly": "<red>This command is only for players!</red>"
+    "usage": "Usage: /[MinecraftCommandName] [OPTION]\n  login     Sign in with [OAuth2ProviderName].\n            On the 1st time, links your [OAuth2ProviderName] account to your Minecraft account.\n  unlink    Unlink your Minecraft account from your [OAuth2ProviderName] account.\n  info      Show information about your linked [OAuth2ProviderName] account.",
+    "linked": "<green>Welcome [OAuth2Username]!\nYour Minecraft [MinecraftUsername] and [OAuth2ProviderName] accounts have been linked successfully!</green>",
+    "notlinked": "<red>But, [MinecraftUsername], your Minecraft account is not even linked to a [OAuth2ProviderName] account!\nUse /[MinecraftCommandName] login to do so.</red>",
+    "unlinked": "<green>Your Minecraft account [MinecraftUsername] has been unlinked successfully from your [OAuth2ProviderName] account!</green>",
+    "alreadyloggedin": "<red>But, [OAuth2Username], you are already logged in as [MinecraftUsername]!</red>",
+    "loggedin": "<green>Logged in!\n[OAuth2Username] is back!</green>",
+    "notloggedin": "<red>Are you really [OAuth2Username]? You aren't logged in with [OAuth2ProviderName], [MinecraftUsername]!\nLog in using /[MinecraftCommandName] login to join the server.</red>",
+    "loggedout": "<green>Logged out!\nBye [OAuth2Username]!</green>",
+    "info": "<blue>Your Minecraft account [MinecraftUsername] is linked to [OAuth2ProviderName] account [OAuth2Username].</blue>",
+    "link": "<blue>To log in with [OAuth2ProviderName] as [MinecraftUsername], click <underlined><click:open_url:'[linkUrl]'>here</click></underlined>!</blue>",
+    "noperms": "<red>But, [MinecraftUsername], you don't have permission to use this command.</red>",
+    "playeronly": "<red>This command is only for real players!</red>"
   }
 }

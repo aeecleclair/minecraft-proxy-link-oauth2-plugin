@@ -15,11 +15,14 @@ public class Blockers {
     @Subscribe(priority = Short.MAX_VALUE)
     public void onCommand(CommandExecuteEvent event) {
         if (!(event.getCommandSource() instanceof Player player)) return;
-        if (OAuth2Client.AuthManager().isAuthenticated(player.getUniqueId())) return;
-
         String commandName = event.getCommand().split(" ")[0];
         if (commandName.equals(this.commandName)) return;
-        player.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.notloggedin")));
+        if (OAuth2Client.AuthManager().isAuthenticated(player.getUniqueId())) return;
+
+        player.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage(
+            OAuth2Client.getDatabaseManager().isLinked(player.getUniqueId().toString())
+            ? "command.notloggedin"
+            : "command.notlinked")));
         event.setResult(CommandExecuteEvent.CommandResult.denied());
     }
 
@@ -30,7 +33,11 @@ public class Blockers {
 
         String allowed = OAuth2Client.limbo(); // servers allowed before linking
         if (!event.getOriginalServer().getServerInfo().getName().equals(allowed)) {
-            event.getPlayer().sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.notloggedin")));
+            event.getPlayer().sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage(
+                OAuth2Client.getDatabaseManager()
+                    .isLinked(event.getPlayer().getUniqueId().toString())
+                ? "command.notloggedin"
+                : "command.notlinked")));
             event.setResult(ServerPreConnectEvent.ServerResult.denied());
             if (event.getPlayer().getCurrentServer().isEmpty()) 
                 event.getPlayer().disconnect(OAuth2Client.formatMessage(OAuth2Client.getMessage("generic.limbodown")));
