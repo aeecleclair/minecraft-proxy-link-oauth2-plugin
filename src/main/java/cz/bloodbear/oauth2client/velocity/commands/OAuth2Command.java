@@ -42,7 +42,7 @@ public class OAuth2Command implements SimpleCommand {
         if (!(source instanceof Player)) {
             source.sendMessage(
                 OAuth2Client.formatMessage(
-                    OAuth2Client.getMessage("command.playeronly")
+                    OAuth2Client.getMessage("command.playeronly", null)
                 )
             );
             return;
@@ -108,7 +108,7 @@ public class OAuth2Command implements SimpleCommand {
             if (!OAuth2Client.AuthManager().isAuthenticated(player.getUniqueId())) {
                 player.sendMessage(
                     OAuth2Client.formatMessage(
-                        OAuth2Client.getMessage("command.notloggedin")
+                        OAuth2Client.getMessage("command.notloggedin", player)
                     )
                 );
                 return;
@@ -117,7 +117,7 @@ public class OAuth2Command implements SimpleCommand {
             player.createConnectionRequest(OAuth2Client.getServer().getServer(OAuth2Client.limbo()).orElse(null)).fireAndForget();
             player.sendMessage(
                 OAuth2Client.formatMessage(
-                    OAuth2Client.getMessage("command.loggedout")
+                    OAuth2Client.getMessage("command.loggedout", player)
                 )
             );
         }
@@ -133,7 +133,7 @@ public class OAuth2Command implements SimpleCommand {
             if (!OAuth2Client.AuthManager().isAuthenticated(player.getUniqueId())) {
                 player.sendMessage(
                     OAuth2Client.formatMessage(
-                        OAuth2Client.getMessage("command.notloggedin")
+                        OAuth2Client.getMessage("command.notloggedin", player)
                     )
                 );
                 return;

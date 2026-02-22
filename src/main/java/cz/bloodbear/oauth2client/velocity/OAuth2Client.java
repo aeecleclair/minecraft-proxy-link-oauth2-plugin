@@ -100,8 +100,8 @@ public class OAuth2Client {
         missingCodePage = new HtmlPage(HTMLDirectory, "missingCode.html");
         invalidStatePage = new HtmlPage(HTMLDirectory, "invalidState.html");
         invalidCodePage = new HtmlPage(HTMLDirectory, "invalidCode.html");
-        alreadyLinkedMinecraftPage = new HtmlPage(HTMLDirectory, "alreadyLinkedMinecraftPage.html");
-        alreadyLinkedOAuth2Page = new HtmlPage(HTMLDirectory, "alreadyLinkedMinecraftPage.html");
+        alreadyLinkedMinecraftPage = new HtmlPage(HTMLDirectory, "alreadyLinkedMinecraft.html");
+        alreadyLinkedOAuth2Page = new HtmlPage(HTMLDirectory, "alreadyLinkedMinecraft.html");
 
         databaseManager = new DatabaseManager(
             config.getString("database.host", ""),

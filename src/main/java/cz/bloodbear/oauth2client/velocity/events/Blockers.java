@@ -22,7 +22,7 @@ public class Blockers {
         player.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage(
             OAuth2Client.getDatabaseManager().isLinked(player.getUniqueId().toString())
             ? "command.notloggedin"
-            : "command.notlinked")));
+            : "command.notlinked", player)));
         event.setResult(CommandExecuteEvent.CommandResult.denied());
     }
 
@@ -33,14 +33,15 @@ public class Blockers {
 
         String allowed = OAuth2Client.limbo(); // servers allowed before linking
         if (!event.getOriginalServer().getServerInfo().getName().equals(allowed)) {
-            event.getPlayer().sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage(
+            Player player = event.getPlayer();
+            player.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage(
                 OAuth2Client.getDatabaseManager()
-                    .isLinked(event.getPlayer().getUniqueId().toString())
+                    .isLinked(player.getUniqueId().toString())
                 ? "command.notloggedin"
-                : "command.notlinked")));
+                : "command.notlinked", player)));
             event.setResult(ServerPreConnectEvent.ServerResult.denied());
-            if (event.getPlayer().getCurrentServer().isEmpty()) 
-                event.getPlayer().disconnect(OAuth2Client.formatMessage(OAuth2Client.getMessage("generic.limbodown")));
+            if (player.getCurrentServer().isEmpty()) 
+                player.disconnect(OAuth2Client.formatMessage(OAuth2Client.getMessage("generic.limbodown")));
         }
     }
 
