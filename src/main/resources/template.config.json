@@ -1,0 +1,41 @@
+{
+  "database": {
+    "host": "<db hostname>",
+    "port": 3306,
+    "name": "<db name>",
+    "username": "<db user>",
+    "password": "<db passwd>",
+    "useSSL": false
+  },
+  "webserver": {
+    "port": 80,
+    "ip": "127.0.0.1",
+    "domain": {
+      "use": true,
+      "domain": "<your.subdomain.org>",
+      "https": true
+    },
+    "threads": 4,
+    "callback": "/callback"
+  },
+  "oauth2": {
+    "provider": "Name of the OAuth2 Provider",
+    "url": "https://<your.oauth2-provider.org>",
+    "client": {
+      "id": "<client ID>",
+      "secret": "<client secret>"
+    },
+    "endpoints": {
+      "authorization": "/auth/authorize",
+      "token": "/auth/token",
+      "userinfo": "/auth/userinfo"
+    },
+    "scope": "<openid or profile>",
+    "claim": "<name, firstname, nickname, etc.>"
+  },
+  "server": {
+    "limbo": "limbo",
+    "lobby": "lobby",
+    "command": "<name for Minecraft command>"
+  }
+}

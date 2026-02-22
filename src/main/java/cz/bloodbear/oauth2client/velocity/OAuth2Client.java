@@ -16,9 +16,12 @@ import cz.bloodbear.oauth2client.core.utils.ConsoleColor;
 import cz.bloodbear.oauth2client.velocity.commands.OAuth2Command;
 import cz.bloodbear.oauth2client.velocity.events.Blockers;
 import cz.bloodbear.oauth2client.velocity.events.PlayerConnection;
-import cz.bloodbear.oauth2client.velocity.placeholders.OAuth2IdPlaceholder;
-import cz.bloodbear.oauth2client.velocity.placeholders.OAuth2AccountUsernamePlaceholder;
-import cz.bloodbear.oauth2client.velocity.placeholders.PlayerNamePlaceholder;
+import cz.bloodbear.oauth2client.velocity.placeholders.MinecraftCommandNamePlaceholder;
+import cz.bloodbear.oauth2client.velocity.placeholders.MinecraftUserIDPlaceholder;
+import cz.bloodbear.oauth2client.velocity.placeholders.MinecraftUsernamePlaceholder;
+import cz.bloodbear.oauth2client.velocity.placeholders.OAuth2UserIDPlaceholder;
+import cz.bloodbear.oauth2client.velocity.placeholders.OAuth2UsernamePlaceholder;
+import cz.bloodbear.oauth2client.velocity.placeholders.OAuth2ProviderNamePlaceholder;
 import cz.bloodbear.oauth2client.velocity.utils.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -33,7 +36,7 @@ import java.time.Duration;
     id = "oauth2client", 
     name = "OAuth2Client", 
     version = "25.7",
-    authors = { "Mtn16", "warix8" }, 
+    authors = { "Mtn16", "warix8", "Marc-Andrieu" }, 
     url = "https://github.com/aeecleclair/minecraft-proxy-link-oauth2-plugin",
     description = "A Velocity plugin for OAuth2 integration.",
     dependencies = {
@@ -53,12 +56,15 @@ public class OAuth2Client {
     private final MiniMessage miniMessage;
 
     private final HtmlPage linkedPage;
-    private final HtmlPage failedPage;
-    private final HtmlPage missingCodePage;
+
     private final HtmlPage missingStatePage;
-    private final HtmlPage invalidPage;
-    private final HtmlPage alreadyLinkedPage;
-    private final String redirect;
+    private final HtmlPage missingCodePage;
+
+    private final HtmlPage invalidStatePage;
+    private final HtmlPage invalidCodePage;
+
+    private final HtmlPage alreadyLinkedMinecraftPage;
+    private final HtmlPage alreadyLinkedOAuth2Page;
 
     private final DatabaseManager databaseManager;
     private final WebServer webServer;
@@ -72,28 +78,30 @@ public class OAuth2Client {
         ProxyServer server,
         Logger logger,
         @DataDirectory Path dataDirectory,
-        PluginContainer container,
-        AuthManager authManager
+        PluginContainer container
     ) {
         instance = this;
 
         this.server = server;
         this.logger = new ConsoleColor(logger);
         this.container = container;
-        this.authManager = authManager;
+
+        this.logger.debug("Starting OAuth2 plugin...");
 
         config = new JsonConfig(dataDirectory, "config.json");
         messages = new JsonConfig(dataDirectory, "messages.json");
         miniMessage = MiniMessage.miniMessage();
+        authManager = new AuthManager();
 
         startTime = System.currentTimeMillis();
-        linkedPage = new HtmlPage(dataDirectory, "linked.html");
-        failedPage = new HtmlPage(dataDirectory, "failed.html");
-        missingCodePage = new HtmlPage(dataDirectory, "missingCode.html");
-        missingStatePage = new HtmlPage(dataDirectory, "missingState.html");
-        invalidPage = new HtmlPage(dataDirectory, "invalid.html");
-        alreadyLinkedPage = new HtmlPage(dataDirectory, "alreadyLinked.html");
-
+        Path HTMLDirectory = dataDirectory.resolve("html");
+        linkedPage = new HtmlPage(HTMLDirectory, "linked.html");
+        missingStatePage = new HtmlPage(HTMLDirectory, "missingState.html");
+        missingCodePage = new HtmlPage(HTMLDirectory, "missingCode.html");
+        invalidStatePage = new HtmlPage(HTMLDirectory, "invalidState.html");
+        invalidCodePage = new HtmlPage(HTMLDirectory, "invalidCode.html");
+        alreadyLinkedMinecraftPage = new HtmlPage(HTMLDirectory, "alreadyLinkedMinecraft.html");
+        alreadyLinkedOAuth2Page = new HtmlPage(HTMLDirectory, "alreadyLinkedMinecraft.html");
 
         databaseManager = new DatabaseManager(
             config.getString("database.host", ""),
@@ -107,28 +115,41 @@ public class OAuth2Client {
         webServer = new WebServer(
             config.getInt("webserver.port", 80),
             config.getBoolean("webserver.domain.use", false),
-            config.getString("webserver.domain.domain", "")
+            config.getInt("webserver.threads", 4),
+            config.getString("webserver.callback", "/callback"),
+            config.getString("oauth2.url", "")
         );
 
-        if (config.getBoolean("webserver.domain.use", false)) {
-            if (config.getBoolean("webserver.domain.https", false)) {
-                redirect = "https://" + config.getString("webserver.domain.domain", "") + "/callback";
-            } else {
-                redirect = "http://" + config.getString("webserver.domain.domain", "") + "/callback";
-            }
-        } else {
-            redirect = "http://" + config.getString("webserver.ip", "") + ":" + config.getString("webserver.port", "")  + "/callback";
-        }
+        String redirectURI = (config.getBoolean("webserver.domain.use", false)
+                && config.getBoolean("webserver.domain.https", false)
+                ? "https://" : "http://")
+            + (config.getBoolean("webserver.domain.use", false)
+                ? config.getString("webserver.domain.domain", "")
+                : config.getString("webserver.ip", "") + ":" + config.getString("webserver.port", ""))
+            + config.getString("webserver.callback", "/callback");
+
         this.OAuth2Handler = new OAuth2Handler(
             config.getString("oauth2.url", ""),
             config.getString("oauth2.client.id", ""),
             config.getString("oauth2.client.secret", ""),
-            redirect
+            redirectURI,
+            config.getString("oauth2.endpoints.authorization", ""),
+            config.getString("oauth2.endpoints.token", ""),
+            config.getString("oauth2.endpoints.userinfo", ""),
+            config.getString("oauth2.scope", ""),
+            config.getString("oauth2.claim", "")
         );
 
-        PlaceholderRegistry.registerPlaceholder(new PlayerNamePlaceholder());
-        PlaceholderRegistry.registerPlaceholder(new OAuth2IdPlaceholder());
-        PlaceholderRegistry.registerPlaceholder(new OAuth2AccountUsernamePlaceholder());
+        PlaceholderRegistry.registerPlaceholder(new MinecraftUserIDPlaceholder());
+        PlaceholderRegistry.registerPlaceholder(new MinecraftUsernamePlaceholder());
+        PlaceholderRegistry.registerPlaceholder(new OAuth2UserIDPlaceholder());
+        PlaceholderRegistry.registerPlaceholder(new OAuth2UsernamePlaceholder());
+        PlaceholderRegistry.registerPlaceholder(new OAuth2ProviderNamePlaceholder(
+            config.getString("oauth2.provider", "")));
+        PlaceholderRegistry.registerPlaceholder(new MinecraftCommandNamePlaceholder(
+            config.getString("server.command", "")));
+
+        this.logger.info("Started OAuth2 plugin successfully!");
     }
 
     @Subscribe
@@ -137,11 +158,12 @@ public class OAuth2Client {
             logger.error(e.getMessage());
             server.shutdown();
         }
+        String commandName = config.getString("server.command", "");
 
         server.getEventManager().register(this, new PlayerConnection());
-        server.getEventManager().register(this, new Blockers());
+        server.getEventManager().register(this, new Blockers(commandName));
         CommandManager commandManager = server.getCommandManager();
-        CommandMeta OAuth2CommandMeta = commandManager.metaBuilder("myecl").plugin(container).build();
+        CommandMeta OAuth2CommandMeta = commandManager.metaBuilder(commandName).plugin(container).build();
 
         commandManager.register(OAuth2CommandMeta, new OAuth2Command());
 
@@ -172,31 +194,34 @@ public class OAuth2Client {
             return instance.missingStatePage;
         } else if (name.equalsIgnoreCase("codeMissing")) {
             return instance.missingCodePage;
-        } else if (name.equalsIgnoreCase("invalid")) {
-            return instance.invalidPage;
-        } else if (name.equalsIgnoreCase("failed")) {
-            return instance.failedPage;
-        } else if (name.equalsIgnoreCase("alreadyLinked")) {
-            return instance.alreadyLinkedPage;
+        } else if (name.equalsIgnoreCase("invalidState")) {
+            return instance.invalidStatePage;
+        } else if (name.equalsIgnoreCase("invalidCode")) {
+            return instance.invalidCodePage;
+        } else if (name.equalsIgnoreCase("alreadyLinkedMinecraft")) {
+            return instance.alreadyLinkedMinecraftPage;
+        } else if (name.equalsIgnoreCase("alreadyLinkedOAuth2")) {
+            return instance.alreadyLinkedOAuth2Page;
         }
         return null;
     }
 
     public static DatabaseManager getDatabaseManager() { return instance.databaseManager; }
-
     public static OAuth2Handler OAuth2Handler() { return instance.OAuth2Handler; }
-
     public static AuthManager AuthManager() { return instance.authManager; }
-
     public static ConsoleColor logger() { return instance.logger; }
-
     public static ProxyServer getServer() { return instance.server; }
 
-    public static Component formatMessage(String input) { return instance.miniMessage.deserialize(input); }
-
-    public static String getClientId() { return instance.config.getString("oauth2.client.id", ""); }
-    public static String getRedirectUri() { return instance.redirect; }
-    public static String getAuthUrl() { return instance.config.getString("oauth2.url", ""); }
+    public static Component formatMessage(String input) {
+        return instance.miniMessage.deserialize(input);
+    }
+    
+    public static String limbo() {
+        return instance.config.getString("server.limbo", "limbo");
+    }
+    public static String lobby() {
+        return instance.config.getString("server.lobby", "lobby");
+    }
 
     // TODO: use that in /myecl info
     public static Duration getUptime() { return Duration.ofMillis(System.currentTimeMillis() - instance.startTime); }

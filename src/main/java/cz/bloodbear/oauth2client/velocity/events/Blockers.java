@@ -6,19 +6,23 @@ import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import cz.bloodbear.oauth2client.velocity.OAuth2Client;
 
-import java.util.Set;
-
 public class Blockers {
+    private final String commandName;
+    public Blockers(String commandName) {
+        this.commandName = commandName;
+    }
 
     @Subscribe(priority = Short.MAX_VALUE)
     public void onCommand(CommandExecuteEvent event) {
         if (!(event.getCommandSource() instanceof Player player)) return;
+        String commandName = event.getCommand().split(" ")[0];
+        if (commandName.equals(this.commandName)) return;
         if (OAuth2Client.AuthManager().isAuthenticated(player.getUniqueId())) return;
 
-        var command = event.getCommand().split(" ")[0];
-
-        if (command.equals("myecl")) return;
-        player.sendMessage(OAuth2Client.formatMessage("<red>Your account is not linked. Please link your account with /myecl login to join the server.</red>"));
+        player.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage(
+            OAuth2Client.getDatabaseManager().isLinked(player.getUniqueId().toString())
+            ? "command.notloggedin"
+            : "command.notlinked", player)));
         event.setResult(CommandExecuteEvent.CommandResult.denied());
     }
 
@@ -27,13 +31,17 @@ public class Blockers {
 
         if (OAuth2Client.AuthManager().isAuthenticated(event.getPlayer().getUniqueId())) return;
 
-        Set<String> allowed = Set.of("limbo", "limbo1", "limbo2"); // servers allowed before linking
-
-        if (!allowed.contains(event.getOriginalServer().getServerInfo().getName())) {
-            event.getPlayer().sendMessage(OAuth2Client.formatMessage("<red>Your account is not linked. Please link your account with /myecl login to join the server.</red>"));
+        String allowed = OAuth2Client.limbo(); // servers allowed before linking
+        if (!event.getOriginalServer().getServerInfo().getName().equals(allowed)) {
+            Player player = event.getPlayer();
+            player.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage(
+                OAuth2Client.getDatabaseManager()
+                    .isLinked(player.getUniqueId().toString())
+                ? "command.notloggedin"
+                : "command.notlinked", player)));
             event.setResult(ServerPreConnectEvent.ServerResult.denied());
-            if (event.getPlayer().getCurrentServer().isEmpty()) 
-                event.getPlayer().disconnect(OAuth2Client.formatMessage("<red>Limbo server is down</red>"));
+            if (player.getCurrentServer().isEmpty()) 
+                player.disconnect(OAuth2Client.formatMessage(OAuth2Client.getMessage("generic.limbodown")));
         }
     }
 

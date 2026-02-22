@@ -17,39 +17,36 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
-import net.luckperms.api.node.Node;
+import net.luckperms.api.node.types.SuffixNode;
 
 public class WebServer {
     private HttpServer server;
     private final int port;
     private final boolean useDomain;
-    private final String domain;
+    private final int nThreads;
+    private final String callbackEndpoint;
+    private final String AuthUrl;
 
-    public WebServer(int port, boolean useDomain, String domain) {
+    public WebServer(int port, boolean useDomain, int nThreads, String callbackEndpoint, String AuthUrl) {
         this.port = port;
         this.useDomain = useDomain;
-        this.domain = domain;
+        this.nThreads = nThreads;
+        this.callbackEndpoint = callbackEndpoint;
+        this.AuthUrl = AuthUrl;
     }
 
-
-
     public void start() throws IOException {
-        Executor executor = Executors.newFixedThreadPool(4, r -> {
+        Executor executor = Executors.newFixedThreadPool(nThreads, r -> {
             Thread t = new Thread(r);
             t.setDaemon(false);
             t.setName("HttpServer-Worker");
             return t;
         });
         server = HttpServer.create(new InetSocketAddress(port), 0);
-        server.createContext("/callback", new OAuthCallbackHandler());
+        server.createContext(callbackEndpoint, new OAuthCallbackHandler());
         server.setExecutor(executor);
         server.start();
         OAuth2Client.logger().info("Webserver is running on port " + port);
-        if (useDomain) {
-            OAuth2Client.logger().info("using custom domain " + domain);
-        } else {
-            OAuth2Client.logger().warn("Webserver is not using domain!");
-        }
     }
 
     public void stop() {
@@ -69,8 +66,8 @@ public class WebServer {
                 }
 
                 if (useDomain) {
-                    String origin = exchange.getRequestHeaders().getFirst("Origin");
-                    if (domain.equalsIgnoreCase(origin)) {
+                    String referer = exchange.getRequestHeaders().getFirst("Referer");
+                    if (!referer.equalsIgnoreCase(AuthUrl + "/")) {
                         sendResponse(exchange, 403, "Forbidden");
                         return;
                     }
@@ -92,32 +89,34 @@ public class WebServer {
 
                 String minecraftUUID = OAuth2Client.getDatabaseManager().getPlayerByCode(state);
                 if (minecraftUUID == null) {
-                    sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("invalid").getContent());
+                    sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("invalidState").getContent());
                     return;
                 }
 
                 OAuth2Account OAuth2Account = OAuth2Client.OAuth2Handler().getOAuth2Account(code);
                 if (OAuth2Account == null) {
-                    sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("failed").getContent());
+                    sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("invalidCode").getContent());
                     return;
                 }
 
                 // From this point, we have a valid UUID and an account from the OAuth2 provider.
                 // We would like to check if the OAuth2 provider account is already linked,
                 // and if the current Minecraft UUID corresponds to this account.
+                OAuth2Client.logger().debug("Login attempt for " + OAuth2Account.username() + " as " + minecraftUUID + ".");
 
                 if (OAuth2Client.getDatabaseManager().isLinked(minecraftUUID)) {
 
                     // If the UUID is already linked, we need to check if it's linked to the same account on the OAuth2 provider
                     OAuth2Account existingAccount = OAuth2Client.getDatabaseManager().getOAuth2Account(minecraftUUID);
                     if (!existingAccount.id().equals(OAuth2Account.id())) {
-                        sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("alreadyLinked").getContent());
+                        sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("alreadyLinkedMinecraft").getContent());
                         return;
                     }
+                    moveToLobby(minecraftUUID, false);
                 } else {
                     // If the UUID is not linked, we need to check if the OAuth2 provider account is already linked to another UUID
                     if (OAuth2Client.getDatabaseManager().isOAuth2AccountLinked(OAuth2Account.id())) {
-                        sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("alreadyLinked").getContent());
+                        sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("alreadyLinkedOAuth2").getContent());
                         return;
                     }
                     // Then we can proceed to link the account
@@ -125,22 +124,25 @@ public class WebServer {
                     // And register the nickname as a LuckPerms suffix
                     User user = LuckPermsProvider.get().getUserManager()
                         .loadUser(UUID.fromString(minecraftUUID)).get();
-                    user.data().add(Node.builder("suffix.1." + OAuth2Account.username()).build());
+                    user.data().add(SuffixNode.builder("(" + OAuth2Account.username() + ")", 1).build());
                     LuckPermsProvider.get().getUserManager()
-                        .saveUser(user);
+                            .saveUser(user);
+                    moveToLobby(minecraftUUID, true);
                 }
 
                 OAuth2Client.AuthManager().authenticate(UUID.fromString(minecraftUUID));
                 sendHtmlResponse(exchange, 200, OAuth2Client.getHtmlPage("linked").getContent());
 
-                Optional<Player> player = OAuth2Client.getServer().getPlayer(UUID.fromString(minecraftUUID));
-                player.ifPresent(p -> {
-                    p.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage("command.oauth2.linked", p)));
-                    // Move the player to the lobby/host server after linking
-                    p.createConnectionRequest(OAuth2Client.getServer().getServer("lobby").orElse(null)).fireAndForget();
-                });
-
             } catch (Exception e) { OAuth2Client.logger().error(e.getMessage()); }
+        }
+
+        private static void moveToLobby(String minecraftUUID, boolean firstTime) {
+            Optional<Player> player = OAuth2Client.getServer().getPlayer(UUID.fromString(minecraftUUID));
+            player.ifPresent(p -> {
+                p.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage(firstTime ? "command.linked" : "command.loggedin", p)));
+                // Move the player to the lobby/host server after linking
+                p.createConnectionRequest(OAuth2Client.getServer().getServer(OAuth2Client.lobby()).orElse(null)).fireAndForget();
+            });
         }
     }
 
