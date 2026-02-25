@@ -1,10 +1,10 @@
-package fr.aeecleclair.oauth2client.velocity.placeholders;
+package fr.aeecleclair.oauth2client.velocity.player.placeholders.impl;
 
 import com.velocitypowered.api.proxy.Player;
 
-import fr.aeecleclair.oauth2client.core.records.OAuth2Account;
+import fr.aeecleclair.oauth2client.core.utils.OAuth2Account;
 import fr.aeecleclair.oauth2client.velocity.OAuth2Client;
-import fr.aeecleclair.oauth2client.velocity.interfaces.Placeholder;
+import fr.aeecleclair.oauth2client.velocity.player.placeholders.Placeholder;
 
 public class OAuth2UsernamePlaceholder implements Placeholder {
     @Override

@@ -1,11 +1,11 @@
-package fr.aeecleclair.oauth2client.velocity.utils;
+package fr.aeecleclair.oauth2client.velocity.player;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.velocitypowered.api.proxy.Player;
 
-import fr.aeecleclair.oauth2client.core.records.OAuth2Account;
+import fr.aeecleclair.oauth2client.core.utils.OAuth2Account;
 import fr.aeecleclair.oauth2client.velocity.OAuth2Client;
 
 import java.io.IOException;
@@ -16,9 +16,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.model.user.User;
-import net.luckperms.api.node.types.SuffixNode;
 
 public class WebServer {
     private HttpServer server;
@@ -123,11 +120,7 @@ public class WebServer {
                     // Then we can proceed to link the account
                     OAuth2Client.getDatabaseManager().linkAccount(minecraftUUID, OAuth2Account.id(), OAuth2Account.username());
                     // And register the nickname as a LuckPerms suffix
-                    User user = LuckPermsProvider.get().getUserManager()
-                        .loadUser(UUID.fromString(minecraftUUID)).get();
-                    user.data().add(SuffixNode.builder("(" + OAuth2Account.username() + ")", 1).build());
-                    LuckPermsProvider.get().getUserManager()
-                            .saveUser(user);
+                    LuckPerms.addSuffix(UUID.fromString(minecraftUUID), "(" + OAuth2Account.username() + ")");
                     moveToLobby(minecraftUUID, true);
                 }
 

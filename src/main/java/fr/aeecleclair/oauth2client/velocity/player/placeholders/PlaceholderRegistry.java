@@ -1,8 +1,6 @@
-package fr.aeecleclair.oauth2client.velocity.utils;
+package fr.aeecleclair.oauth2client.velocity.player.placeholders;
 
 import com.velocitypowered.api.proxy.Player;
-
-import fr.aeecleclair.oauth2client.velocity.interfaces.Placeholder;
 
 import java.util.HashMap;
 import java.util.Map;

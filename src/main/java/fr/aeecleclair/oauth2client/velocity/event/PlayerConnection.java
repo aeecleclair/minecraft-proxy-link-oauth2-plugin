@@ -1,4 +1,4 @@
-package fr.aeecleclair.oauth2client.velocity.events;
+package fr.aeecleclair.oauth2client.velocity.event;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;

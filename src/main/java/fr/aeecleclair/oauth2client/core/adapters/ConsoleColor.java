@@ -1,4 +1,4 @@
-package fr.aeecleclair.oauth2client.core.utils;
+package fr.aeecleclair.oauth2client.core.adapters;
 
 import org.slf4j.Logger;
 

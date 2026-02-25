@@ -1,8 +1,8 @@
-package fr.aeecleclair.oauth2client.velocity.placeholders;
+package fr.aeecleclair.oauth2client.velocity.player.placeholders.impl;
 
 import com.velocitypowered.api.proxy.Player;
 
-import fr.aeecleclair.oauth2client.velocity.interfaces.Placeholder;
+import fr.aeecleclair.oauth2client.velocity.player.placeholders.Placeholder;
 
 public class MinecraftUsernamePlaceholder implements Placeholder {
     @Override

@@ -1,9 +1,9 @@
-package fr.aeecleclair.oauth2client.velocity.utils;
+package fr.aeecleclair.oauth2client.core.adapters;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import fr.aeecleclair.oauth2client.core.records.OAuth2Account;
+import fr.aeecleclair.oauth2client.core.utils.OAuth2Account;
 import fr.aeecleclair.oauth2client.velocity.OAuth2Client;
 import okhttp3.*;
 

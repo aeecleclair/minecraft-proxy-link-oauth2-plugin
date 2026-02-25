@@ -1,4 +1,4 @@
-package fr.aeecleclair.oauth2client.velocity.utils;
+package fr.aeecleclair.oauth2client.core.adapters;
 
 import java.io.IOException;
 import java.io.InputStream;

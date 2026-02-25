@@ -1,4 +1,4 @@
-package fr.aeecleclair.oauth2client.velocity.interfaces;
+package fr.aeecleclair.oauth2client.velocity.player.placeholders;
 
 import com.velocitypowered.api.proxy.Player;
 

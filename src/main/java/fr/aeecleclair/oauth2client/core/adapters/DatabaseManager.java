@@ -1,8 +1,8 @@
-package fr.aeecleclair.oauth2client.velocity.utils;
+package fr.aeecleclair.oauth2client.core.adapters;
 
 import java.sql.*;
 
-import fr.aeecleclair.oauth2client.core.records.OAuth2Account;
+import fr.aeecleclair.oauth2client.core.utils.OAuth2Account;
 import fr.aeecleclair.oauth2client.velocity.OAuth2Client;
 
 public class DatabaseManager {
