@@ -1,21 +1,21 @@
-package fr.aeecleclair.oauth2client.velocity.player;
+package fr.aeecleclair.oauth2client.core.adapters;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import com.velocitypowered.api.proxy.Player;
 
 import fr.aeecleclair.oauth2client.core.utils.OAuth2Account;
 import fr.aeecleclair.oauth2client.velocity.OAuth2Client;
+import fr.aeecleclair.oauth2client.velocity.player.LuckPerms;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.function.BiConsumer;
 
 public class WebServer {
     private HttpServer server;
@@ -24,13 +24,23 @@ public class WebServer {
     private final int nThreads;
     private final String callbackEndpoint;
     private final String AuthUrl;
+    private final BiConsumer<UUID, String> moveToLobbyCallback;
 
-    public WebServer(int port, boolean useDomain, int nThreads, String callbackEndpoint, String AuthUrl) {
+
+    public WebServer(
+        int port,
+        boolean useDomain,
+        int nThreads,
+        String callbackEndpoint,
+        String AuthUrl,
+        BiConsumer<UUID, String> moveToLobbyWithMessage
+    ) {
         this.port = port;
         this.useDomain = useDomain;
         this.nThreads = nThreads;
         this.callbackEndpoint = callbackEndpoint;
         this.AuthUrl = AuthUrl;
+        this.moveToLobbyCallback = moveToLobbyWithMessage;
     }
 
     public void start() throws IOException {
@@ -110,7 +120,7 @@ public class WebServer {
                         sendHtmlResponse(exchange, 400, OAuth2Client.getHtmlPage("alreadyLinkedMinecraft").getContent());
                         return;
                     }
-                    moveToLobby(minecraftUUID, false);
+                    moveToLobbyCallback.accept(UUID.fromString(minecraftUUID), "command.loggedin");
                 } else {
                     // If the UUID is not linked, we need to check if the OAuth2 provider account is already linked to another UUID
                     if (OAuth2Client.getDatabaseManager().isOAuth2AccountLinked(OAuth2Account.id())) {
@@ -121,7 +131,7 @@ public class WebServer {
                     OAuth2Client.getDatabaseManager().linkAccount(minecraftUUID, OAuth2Account.id(), OAuth2Account.username());
                     // And register the nickname as a LuckPerms suffix
                     LuckPerms.addSuffix(UUID.fromString(minecraftUUID), "(" + OAuth2Account.username() + ")");
-                    moveToLobby(minecraftUUID, true);
+                    moveToLobbyCallback.accept(UUID.fromString(minecraftUUID), "command.linked");
                 }
 
                 OAuth2Client.AuthManager().authenticate(UUID.fromString(minecraftUUID));
@@ -130,14 +140,6 @@ public class WebServer {
             } catch (Exception e) { OAuth2Client.logger().error(e.getMessage()); }
         }
 
-        private static void moveToLobby(String minecraftUUID, boolean firstTime) {
-            Optional<Player> player = OAuth2Client.getServer().getPlayer(UUID.fromString(minecraftUUID));
-            player.ifPresent(p -> {
-                p.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage(firstTime ? "command.linked" : "command.loggedin", p)));
-                // Move the player to the lobby/host server after linking
-                p.createConnectionRequest(OAuth2Client.getServer().getServer(OAuth2Client.lobby()).orElse(null)).fireAndForget();
-            });
-        }
     }
 
     private String getQueryParam(String query, String param) {

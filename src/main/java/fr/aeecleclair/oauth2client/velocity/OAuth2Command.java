@@ -114,7 +114,7 @@ public class OAuth2Command implements SimpleCommand {
                 return;
             }
             OAuth2Client.AuthManager().revoke(player.getUniqueId());
-            player.createConnectionRequest(OAuth2Client.getServer().getServer(OAuth2Client.limbo()).orElse(null)).fireAndForget();
+            OAuth2Client.moveToLimbo(player);
             player.sendMessage(
                 OAuth2Client.formatMessage(
                     OAuth2Client.getMessage("command.loggedout", player)
@@ -142,7 +142,7 @@ public class OAuth2Command implements SimpleCommand {
 
             OAuth2Client.AuthManager().revoke(player.getUniqueId());
             databaseManager.unlinkAccount(player.getUniqueId().toString());
-            player.createConnectionRequest(OAuth2Client.getServer().getServer(OAuth2Client.limbo()).orElse(null)).fireAndForget();
+            OAuth2Client.moveToLimbo(player);
             player.sendMessage(
                 OAuth2Client.formatMessage(
                     OAuth2Client.getMessage("command.unlinked", player)
