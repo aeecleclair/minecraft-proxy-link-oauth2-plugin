@@ -1,4 +1,4 @@
-package fr.aeecleclair.oauth2client.velocity.utils;
+package fr.aeecleclair.oauth2client.core.utils;
 
 import java.util.Collections;
 import java.util.Set;

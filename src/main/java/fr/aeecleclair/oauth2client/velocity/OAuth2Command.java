@@ -1,12 +1,11 @@
-package fr.aeecleclair.oauth2client.velocity.commands;
+package fr.aeecleclair.oauth2client.velocity;
 
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 
-import fr.aeecleclair.oauth2client.velocity.OAuth2Client;
-import fr.aeecleclair.oauth2client.velocity.utils.DatabaseManager;
-import net.luckperms.api.LuckPermsProvider;
+import fr.aeecleclair.oauth2client.core.adapters.DatabaseManager;
+import fr.aeecleclair.oauth2client.velocity.player.LuckPerms;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -50,7 +49,7 @@ public class OAuth2Command implements SimpleCommand {
         }
         Player player = (Player) invocation.source();
 
-        if (!hasPermission(player)) {
+        if (!LuckPerms.hasPermission(player, null)) {
             player.sendMessage(
                 OAuth2Client.formatMessage(
                     OAuth2Client.getMessage("command.noperms", player)
@@ -66,7 +65,7 @@ public class OAuth2Command implements SimpleCommand {
             );
             return;
         }
-        if (!hasPermission(player, args[0].toLowerCase())) {
+        if (!LuckPerms.hasPermission(player, args[0].toLowerCase())) {
             player.sendMessage(
                 OAuth2Client.formatMessage(
                     OAuth2Client.getMessage("command.noperms", player)
@@ -115,7 +114,7 @@ public class OAuth2Command implements SimpleCommand {
                 return;
             }
             OAuth2Client.AuthManager().revoke(player.getUniqueId());
-            player.createConnectionRequest(OAuth2Client.getServer().getServer(OAuth2Client.limbo()).orElse(null)).fireAndForget();
+            OAuth2Client.moveToLimbo(player);
             player.sendMessage(
                 OAuth2Client.formatMessage(
                     OAuth2Client.getMessage("command.loggedout", player)
@@ -143,7 +142,7 @@ public class OAuth2Command implements SimpleCommand {
 
             OAuth2Client.AuthManager().revoke(player.getUniqueId());
             databaseManager.unlinkAccount(player.getUniqueId().toString());
-            player.createConnectionRequest(OAuth2Client.getServer().getServer(OAuth2Client.limbo()).orElse(null)).fireAndForget();
+            OAuth2Client.moveToLimbo(player);
             player.sendMessage(
                 OAuth2Client.formatMessage(
                     OAuth2Client.getMessage("command.unlinked", player)
@@ -175,7 +174,7 @@ public class OAuth2Command implements SimpleCommand {
             List<String> choices = Arrays.asList("login", "logout", "unlink", "info");
             List<String> finalChoices = new ArrayList<>();
             choices.forEach(choice -> {
-                if (hasPermission((Player) invocation.source(), choice))
+                if (LuckPerms.hasPermission((Player) invocation.source(), choice))
                     finalChoices.add(choice);
             });
             if (invocation.arguments().length == 0)
@@ -184,37 +183,5 @@ public class OAuth2Command implements SimpleCommand {
         }
 
         return new ArrayList<>();
-    }
-
-    public static boolean hasPermission(Player player) {
-        return LuckPermsProvider
-            .get()
-            .getUserManager()
-            .getUser(player.getUniqueId())
-            .getCachedData()
-            .getPermissionData()
-            .checkPermission("oauth2client.player")
-            .asBoolean();
-    }
-
-    public static boolean hasPermission(Player player, String subcommand) {
-        return (
-        LuckPermsProvider
-            .get()
-            .getUserManager()
-            .getUser(player.getUniqueId())
-            .getCachedData()
-            .getPermissionData()
-            .checkPermission(String.format("oauth2client.player.%s", subcommand.toLowerCase()))
-            .asBoolean()
-        || LuckPermsProvider
-            .get()
-            .getUserManager()
-            .getUser(player.getUniqueId())
-            .getCachedData()
-            .getPermissionData()
-            .checkPermission("oauth2client.player.*")
-            .asBoolean()
-        );
     }
 }

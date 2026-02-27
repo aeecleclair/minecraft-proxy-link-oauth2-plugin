@@ -13,17 +13,17 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 
-import fr.aeecleclair.oauth2client.core.utils.ConsoleColor;
-import fr.aeecleclair.oauth2client.velocity.commands.OAuth2Command;
-import fr.aeecleclair.oauth2client.velocity.events.Blockers;
-import fr.aeecleclair.oauth2client.velocity.events.PlayerConnection;
-import fr.aeecleclair.oauth2client.velocity.placeholders.MinecraftCommandNamePlaceholder;
-import fr.aeecleclair.oauth2client.velocity.placeholders.MinecraftUserIDPlaceholder;
-import fr.aeecleclair.oauth2client.velocity.placeholders.MinecraftUsernamePlaceholder;
-import fr.aeecleclair.oauth2client.velocity.placeholders.OAuth2ProviderNamePlaceholder;
-import fr.aeecleclair.oauth2client.velocity.placeholders.OAuth2UserIDPlaceholder;
-import fr.aeecleclair.oauth2client.velocity.placeholders.OAuth2UsernamePlaceholder;
-import fr.aeecleclair.oauth2client.velocity.utils.*;
+import fr.aeecleclair.oauth2client.core.adapters.ConsoleColor;
+import fr.aeecleclair.oauth2client.core.adapters.DatabaseManager;
+import fr.aeecleclair.oauth2client.core.adapters.HtmlPage;
+import fr.aeecleclair.oauth2client.core.adapters.JsonConfig;
+import fr.aeecleclair.oauth2client.core.adapters.OAuth2Handler;
+import fr.aeecleclair.oauth2client.core.adapters.WebServer;
+import fr.aeecleclair.oauth2client.core.utils.AuthManager;
+import fr.aeecleclair.oauth2client.velocity.event.Blockers;
+import fr.aeecleclair.oauth2client.velocity.event.PlayerConnection;
+import fr.aeecleclair.oauth2client.velocity.player.placeholders.PlaceholderRegistry;
+import fr.aeecleclair.oauth2client.velocity.player.placeholders.impl.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.UUID;
 
 @Plugin(
     id = "oauth2client", 
@@ -118,7 +119,8 @@ public class OAuth2Client {
             config.getBoolean("webserver.domain.use", false),
             config.getInt("webserver.threads", 4),
             config.getString("webserver.callback", "/callback"),
-            config.getString("oauth2.url", "")
+            config.getString("oauth2.url", ""),
+            OAuth2Client::moveToLobby
         );
 
         String redirectURI = (config.getBoolean("webserver.domain.use", false)
@@ -211,17 +213,29 @@ public class OAuth2Client {
     public static OAuth2Handler OAuth2Handler() { return instance.OAuth2Handler; }
     public static AuthManager AuthManager() { return instance.authManager; }
     public static ConsoleColor logger() { return instance.logger; }
-    public static ProxyServer getServer() { return instance.server; }
 
     public static Component formatMessage(String input) {
         return instance.miniMessage.deserialize(input);
     }
-    
+
+    private static void moveToServer(Player player, String serverName) {
+        player.createConnectionRequest(instance.server.getServer(serverName).orElse(null)).fireAndForget();
+    }
+
+    public static void moveToLobby(UUID minecraftUUID, String message) {
+        instance.server.getPlayer(minecraftUUID).ifPresent(p -> {
+            p.sendMessage(OAuth2Client
+                .formatMessage(OAuth2Client.getMessage(message, p)));
+            moveToServer(p, instance.config.getString("server.lobby", "lobby"));
+        });
+    }
+
+    public static void moveToLimbo(Player player) {
+        moveToServer(player, instance.config.getString("server.limbo", "limbo"));
+    }
+
     public static String limbo() {
         return instance.config.getString("server.limbo", "limbo");
-    }
-    public static String lobby() {
-        return instance.config.getString("server.lobby", "lobby");
     }
 
     // TODO: use that in /myecl info
