@@ -97,7 +97,7 @@ public class OAuth2Handler {
                 if (response.isSuccessful() && response.body() != null) {
                     String responseBody = response.body().string();
                     String userId = responseBody
-                        .substring(responseBody.indexOf("\"id\":\"") + 6);
+                        .substring(responseBody.indexOf("\"sub\":\"") + 3 + 4);
                     userId = userId.substring(0, userId.indexOf("\""));
                     String nickname = responseBody
                         .substring(responseBody.indexOf("\"" + CLAIM + "\":\"") + CLAIM.length() + 4);
