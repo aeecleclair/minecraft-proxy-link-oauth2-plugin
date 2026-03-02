@@ -130,7 +130,7 @@ public class WebServer {
                     // Then we can proceed to link the account
                     OAuth2Client.getDatabaseManager().linkAccount(minecraftUUID, OAuth2Account.id(), OAuth2Account.username());
                     // And register the nickname as a LuckPerms suffix
-                    LuckPerms.addSuffix(UUID.fromString(minecraftUUID), "(" + OAuth2Account.username() + ")");
+                    LuckPerms.addSuffix(UUID.fromString(minecraftUUID), OAuth2Account.username());
                     moveToLobbyCallback.accept(UUID.fromString(minecraftUUID), "command.linked");
                 }
 

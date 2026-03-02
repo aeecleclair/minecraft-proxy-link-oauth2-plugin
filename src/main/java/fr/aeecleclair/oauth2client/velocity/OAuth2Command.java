@@ -141,6 +141,7 @@ public class OAuth2Command implements SimpleCommand {
 
 
             OAuth2Client.AuthManager().revoke(player.getUniqueId());
+            LuckPerms.removeSuffix(player.getUniqueId());
             databaseManager.unlinkAccount(player.getUniqueId().toString());
             OAuth2Client.moveToLimbo(player);
             player.sendMessage(

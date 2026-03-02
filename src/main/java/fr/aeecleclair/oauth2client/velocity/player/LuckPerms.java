@@ -32,9 +32,20 @@ public class LuckPerms {
                 || checkPermission( minecraftUUID, String.format("oauth2client.player.%s", subcommand.toLowerCase())));
     }
     
-    public static void addSuffix(UUID minecraftUUID, String suffix) throws InterruptedException, ExecutionException {
-        User user = userManager.loadUser(minecraftUUID).get();
-        user.data().add(SuffixNode.builder(suffix, 1).build());
-        LuckPermsProvider.get().getUserManager().saveUser(user);
+    public static void addSuffix(UUID minecraftUUID, String suffix) {
+        try {
+            User user = userManager.loadUser(minecraftUUID).get();
+            user.data().add(SuffixNode.builder(suffix.replace(".", "\\."), 1).build()); // replace . with \. for LuckPerms parsing
+            LuckPermsProvider.get().getUserManager().saveUser(user);
+        } catch (InterruptedException | ExecutionException e) { e.printStackTrace(); }
+    }
+
+    public static void removeSuffix(UUID minecraftUUID) {
+        try {
+            User user = userManager.loadUser(minecraftUUID).get();
+            String suffix = user.getCachedData().getMetaData().getSuffix();
+            user.data().remove(SuffixNode.builder(suffix, 1).build());
+            LuckPermsProvider.get().getUserManager().saveUser(user);
+        } catch (InterruptedException | ExecutionException e) { e.printStackTrace(); }
     }
 }
