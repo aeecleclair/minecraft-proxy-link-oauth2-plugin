@@ -41,7 +41,7 @@ public class Blockers {
                 ? "command.notloggedin"
                 : "command.notlinked", player)));
             event.setResult(ServerPreConnectEvent.ServerResult.denied());
-            if (player.getCurrentServer().isEmpty()) 
+            if (player.getCurrentServer().isEmpty())
                 player.disconnect(OAuth2Client.formatMessage(OAuth2Client.getMessage("generic.limbodown")));
         }
     }

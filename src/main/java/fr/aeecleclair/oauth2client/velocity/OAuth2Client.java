@@ -21,6 +21,7 @@ import fr.aeecleclair.oauth2client.core.adapters.OAuth2Handler;
 import fr.aeecleclair.oauth2client.core.adapters.WebServer;
 import fr.aeecleclair.oauth2client.core.utils.AuthManager;
 import fr.aeecleclair.oauth2client.velocity.event.Blockers;
+import fr.aeecleclair.oauth2client.velocity.event.Cookie;
 import fr.aeecleclair.oauth2client.velocity.event.PlayerConnection;
 import fr.aeecleclair.oauth2client.velocity.player.placeholders.PlaceholderRegistry;
 import fr.aeecleclair.oauth2client.velocity.player.placeholders.impl.*;
@@ -31,6 +32,7 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.UUID;
 
@@ -165,6 +167,7 @@ public class OAuth2Client {
 
         server.getEventManager().register(this, new PlayerConnection());
         server.getEventManager().register(this, new Blockers(commandName));
+        server.getEventManager().register(this, new Cookie());
         CommandManager commandManager = server.getCommandManager();
         CommandMeta OAuth2CommandMeta = commandManager.metaBuilder(commandName).plugin(container).build();
 
@@ -218,6 +221,13 @@ public class OAuth2Client {
         return instance.miniMessage.deserialize(input);
     }
 
+    static byte[] generateCode() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[16];
+        random.nextBytes(bytes);
+        return bytes;
+    }
+
     private static void moveToServer(Player player, String serverName) {
         player.createConnectionRequest(instance.server.getServer(serverName).orElse(null)).fireAndForget();
     }
@@ -225,7 +235,9 @@ public class OAuth2Client {
     public static void moveToLobby(UUID minecraftUUID, String message) {
         instance.server.getPlayer(minecraftUUID).ifPresent(p -> {
             p.sendMessage(OAuth2Client
-                .formatMessage(OAuth2Client.getMessage(message, p)));
+                    .formatMessage(OAuth2Client.getMessage(message, p)));
+            instance.logger.debug("Tentative de cookie pour " + p.getUsername());
+            (new Cookie()).storeCookie(p, generateCode());
             moveToServer(p, instance.config.getString("server.lobby", "lobby"));
         });
     }
