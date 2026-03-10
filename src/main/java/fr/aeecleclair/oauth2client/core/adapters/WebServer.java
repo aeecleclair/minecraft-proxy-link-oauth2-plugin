@@ -3,6 +3,7 @@ package fr.aeecleclair.oauth2client.core.adapters;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.SimpleFileServer;
 
 import fr.aeecleclair.oauth2client.core.utils.OAuth2Account;
 import fr.aeecleclair.oauth2client.velocity.OAuth2Client;
@@ -52,6 +53,7 @@ public class WebServer {
         });
         server = HttpServer.create(new InetSocketAddress(port), 0);
         server.createContext(callbackEndpoint, new OAuthCallbackHandler());
+        server.createContext("/", SimpleFileServer.createFileHandler(OAuth2Client.getZip().toAbsolutePath()));
         server.setExecutor(executor);
         server.start();
         OAuth2Client.logger().info("Webserver is running on port " + port);

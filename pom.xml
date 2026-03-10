@@ -35,6 +35,9 @@
                     <resource>
                         <directory>src/main/resources</directory>
                         <filtering>true</filtering>
+                        <excludes>
+                            <exclude>**/*.zip</exclude>
+                        </excludes>
                     </resource>
                     <resource>
                         <directory>licenses</directory>
@@ -50,6 +53,9 @@
             <resource>
                 <directory>${project.basedir}/src/main/resources</directory>
                 <filtering>true</filtering>
+                <excludes>
+                    <exclude>**/*.zip</exclude> <!-- Maven is uncapable of copying a zip file as is... -->
+                </excludes>
             </resource>
         </resources>
         <plugins>

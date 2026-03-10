@@ -11,6 +11,9 @@
       <resource>
         <filtering>true</filtering>
         <directory>${project.basedir}/src/main/resources</directory>
+        <excludes>
+            <exclude>**/*.zip</exclude>
+        </excludes>
       </resource>
     </resources>
     <plugins>
@@ -87,6 +90,9 @@
           <resource>
             <filtering>true</filtering>
             <directory>src/main/resources</directory>
+            <excludes>
+                <exclude>**/*.zip</exclude>
+            </excludes>
           </resource>
         </resources>
         <plugins>

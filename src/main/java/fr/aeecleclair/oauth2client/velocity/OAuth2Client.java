@@ -53,6 +53,7 @@ public class OAuth2Client {
     private final ProxyServer server;
     private final PluginContainer container;
 
+    private final Path zipPath;
     private final JsonConfig config;
     private final JsonConfig messages;
     private final MiniMessage miniMessage;
@@ -90,6 +91,7 @@ public class OAuth2Client {
 
         this.logger.debug("Starting OAuth2 plugin...");
 
+        zipPath = dataDirectory.resolve("zip");
         config = new JsonConfig(dataDirectory, "config.json");
         messages = new JsonConfig(dataDirectory, "messages.json");
         miniMessage = MiniMessage.miniMessage();
@@ -207,6 +209,10 @@ public class OAuth2Client {
             return instance.alreadyLinkedOAuth2Page;
         }
         return null;
+    }
+
+    public static Path getZip() {
+        return instance.zipPath;
     }
 
     public static DatabaseManager getDatabaseManager() { return instance.databaseManager; }
