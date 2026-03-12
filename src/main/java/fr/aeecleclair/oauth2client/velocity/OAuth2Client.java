@@ -12,6 +12,7 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.player.ResourcePackInfo;
 
 import fr.aeecleclair.oauth2client.core.adapters.ConsoleColor;
 import fr.aeecleclair.oauth2client.core.adapters.DatabaseManager;
@@ -47,10 +48,10 @@ import java.util.UUID;
     }
 )
 public class OAuth2Client {
-    private static OAuth2Client instance;
+    public static OAuth2Client instance;
 
     public final ConsoleColor logger;
-    private final ProxyServer server;
+    public final ProxyServer server;
     private final PluginContainer container;
 
     private final Path zipPath;
@@ -92,6 +93,7 @@ public class OAuth2Client {
         this.logger.debug("Starting OAuth2 plugin...");
 
         zipPath = dataDirectory.resolve("zip");
+
         config = new JsonConfig(dataDirectory, "config.json");
         messages = new JsonConfig(dataDirectory, "messages.json");
         miniMessage = MiniMessage.miniMessage();
@@ -231,7 +233,21 @@ public class OAuth2Client {
     public static void moveToLobby(UUID minecraftUUID, String message) {
         instance.server.getPlayer(minecraftUUID).ifPresent(p -> {
             p.sendMessage(OAuth2Client
-                .formatMessage(OAuth2Client.getMessage(message, p)));
+                    .formatMessage(OAuth2Client.getMessage(message, p)));
+            ResourcePackInfo.Builder resourcePack = instance.server
+                    .createResourcePackBuilder("https://minecraft.dev.eclair.ec-lyon.fr/oauth2client_cookie.zip");
+            UUID token = UUID.randomUUID();
+            instance.logger.debug("Token pour " + p.getUsername() + " : " + token.toString());
+            p.sendResourcePackOffer(resourcePack.setId(token).setShouldForce(true).build());
+            instance.logger.debug("début du sleep...");
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            instance.logger.debug("...fin du sleep");
+            instance.logger.debug(p.getAppliedResourcePacks().toString());
+            instance.logger.debug(p.getPendingResourcePacks().toString());
             moveToServer(p, instance.config.getString("server.lobby", "lobby"));
         });
     }

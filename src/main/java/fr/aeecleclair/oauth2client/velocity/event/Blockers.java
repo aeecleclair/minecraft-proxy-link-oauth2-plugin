@@ -18,6 +18,7 @@ public class Blockers {
         if (!(event.getCommandSource() instanceof Player player)) return;
         String commandName = event.getCommand().split(" ")[0];
         if (commandName.equals(this.commandName)) return;
+        OAuth2Client.logger().debug(player.getAppliedResourcePacks().toString());
         if (OAuth2Client.AuthManager().isAuthenticated(player.getUniqueId())) return;
 
         player.sendMessage(OAuth2Client.formatMessage(OAuth2Client.getMessage(
