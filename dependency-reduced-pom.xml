@@ -24,7 +24,7 @@
             <path>
               <groupId>com.velocitypowered</groupId>
               <artifactId>velocity-api</artifactId>
-              <version>3.4.0-SNAPSHOT</version>
+              <version>3.5.0-SNAPSHOT</version>
             </path>
           </annotationProcessorPaths>
         </configuration>
@@ -100,7 +100,7 @@
                 <path>
                   <groupId>com.velocitypowered</groupId>
                   <artifactId>velocity-api</artifactId>
-                  <version>3.4.0-SNAPSHOT</version>
+                  <version>3.5.0-SNAPSHOT</version>
                 </path>
               </annotationProcessorPaths>
             </configuration>
@@ -119,7 +119,7 @@
     <dependency>
       <groupId>com.velocitypowered</groupId>
       <artifactId>velocity-api</artifactId>
-      <version>3.4.0-SNAPSHOT</version>
+      <version>3.5.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
